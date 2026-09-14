@@ -1,0 +1,21 @@
+{
+  "package": "PredictIQ Final Updated Package",
+  "version": "1.0.0",
+  "prototype_mode": "synthetic_read_only",
+  "includes": {
+    "original_control_tower_appearance": true,
+    "original_scenario_run": true,
+    "source_result_tabs": [
+      "part_geometry",
+      "geometry_pairing",
+      "technical_equipment",
+      "mrs_quality"
+    ],
+    "source_schemas": 5,
+    "normalization_mappings": true,
+    "n8n_workflows": 5,
+    "canonical_sql": true,
+    "standalone_html": true
+  },
+  "production_note": "Confirm authoritative source contracts and use approved managed credentials before production connection."
+}

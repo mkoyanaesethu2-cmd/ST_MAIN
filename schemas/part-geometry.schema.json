@@ -1,0 +1,63 @@
+{
+  "title": "Part Geometry Source",
+  "type": "object",
+  "required": [
+    "measurementId",
+    "timestamp",
+    "partNumber",
+    "feature",
+    "measuredValue",
+    "unit"
+  ],
+  "properties": {
+    "measurementId": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string"
+    },
+    "vin": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "partNumber": {
+      "type": "string"
+    },
+    "batchId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "feature": {
+      "type": "string"
+    },
+    "measuredValue": {
+      "type": "number"
+    },
+    "unit": {
+      "type": "string"
+    },
+    "lowerLimit": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "upperLimit": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "station": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

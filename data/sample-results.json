@@ -1,0 +1,10 @@
+{
+  "synthetic": true,
+  "domains": [
+    "pg",
+    "gp",
+    "te",
+    "mrs"
+  ],
+  "scenarioFunction": "runScenario"
+}

@@ -1,0 +1,126 @@
+{
+  "name": "01_part_geometry_ingest",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "predictiq/part-geometry",
+        "responseMode": "responseNode"
+      },
+      "id": "trigger",
+      "name": "Approved Source Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(i=>({json:{source_domain:'part_geometry',source_system:'part_geometry',payload:i.json.body||i.json}}));"
+      },
+      "id": "envelope",
+      "name": "Create Source Envelope",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const src=$json.source_domain; const x=$json.payload||$json; const now=new Date().toISOString(); const id=(...v)=>v.filter(Boolean).join('|'); const status=(value,lo,hi)=>{const n=Number(value);if(!Number.isFinite(n)||lo==null||hi==null)return 'UNKNOWN';if(n<lo||n>hi)return 'NOK';const span=hi-lo;return (n<lo+span*.1||n>hi-span*.1)?'TREND':'OK'}; let e={schema_version:'1.0.0',source_system:$json.source_system||src,source_domain:src,event_type:$json.event_type||'measurement',ingested_at:now,plant:x.plant||'East London',part:{},location:{},asset:{},feature:{},measurement:{},quality:{status:'UNKNOWN'},trace:{},payload:x}; if(src==='part_geometry'){Object.assign(e,{event_id:x.measurementId,event_time:new Date(x.timestamp).toISOString(),vin:x.vin||null});e.part={part_number:x.partNumber||null,batch_id:x.batchId||null,supplier_id:x.supplierId||null};e.location.station=x.station||null;e.feature.feature_id=x.feature;e.measurement={value:x.measuredValue,unit:x.unit,lower_limit:x.lowerLimit??null,upper_limit:x.upperLimit??null};e.quality.status=status(x.measuredValue,x.lowerLimit,x.upperLimit);}else if(src==='geometry_pairing'){Object.assign(e,{event_id:x.pairingId,event_time:new Date(x.timestamp).toISOString(),vin:x.vin});e.part.part_number=x.candidatePart;e.measurement={value:x.predictedFlush??null,unit:'mm',lower_limit:null,upper_limit:null};e.quality={status:/best/i.test(x.decision)?'OK':/do not|reject/i.test(x.decision)?'NOK':'TREND',confidence:Number(x.compatibility)/100};e.trace.source_record_id=x.partGeometryMeasurementId||null;}else if(src==='msb_technical'){Object.assign(e,{event_id:id(x.assetId,x.timestamp,x.parameter),event_time:new Date(x.timestamp).toISOString(),vin:x.vin||null,plant:x.plant||'East London'});e.location={line:x.line||null,station:x.station||null,shop:x.shop||null};e.asset={asset_id:x.assetId,robot:x.robot||null,controller:x.controller||null,tool:x.tool||null};e.feature.parameter=x.parameter;e.measurement={value:x.value,unit:x.unit||null,lower_limit:x.lowerLimit??null,upper_limit:x.upperLimit??null};e.quality.status=status(x.value,x.lowerLimit,x.upperLimit);}else if(src==='mrs_quality'){Object.assign(e,{event_id:x.uniqueID,event_time:new Date(x.timestamp).toISOString(),vin:x.vin||null});e.location.station=x.station||null;e.asset.asset_id=x.assetId||null;e.feature.operation=x.operation||null;const q=String(x.qualityStatement||'').toUpperCase();e.quality={status:x.repairState?'REWORK':(['IO','OK'].includes(q)?'OK':['NIO','NOK'].includes(q)?'NOK':'UNKNOWN'),fault_code:x.faultCode||null,fault_text:x.faultCodeText||null};}else{throw new Error('Unsupported source_domain: '+src)} e.trace.correlation_key=e.vin||id(e.part.part_number,e.location.station,e.event_time); return [{json:e}];"
+      },
+      "id": "normalize",
+      "name": "Normalize to Canonical Event",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const e=$json; const missing=['event_id','event_time','source_domain','quality'].filter(k=>e[k]==null); if(missing.length) throw new Error('Canonical validation failed: '+missing.join(',')); return items;"
+      },
+      "id": "validate",
+      "name": "Validate Canonical Minimum",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        700,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { accepted: true, event_id: $json.event_id, source_domain: $json.source_domain, correlation_key: $json.trace.correlation_key } }}"
+      },
+      "id": "respond",
+      "name": "Acknowledge Event",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        940,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Approved Source Webhook": {
+      "main": [
+        [
+          {
+            "node": "Create Source Envelope",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Source Envelope": {
+      "main": [
+        [
+          {
+            "node": "Normalize to Canonical Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize to Canonical Event": {
+      "main": [
+        [
+          {
+            "node": "Validate Canonical Minimum",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Canonical Minimum": {
+      "main": [
+        [
+          {
+            "node": "Acknowledge Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}

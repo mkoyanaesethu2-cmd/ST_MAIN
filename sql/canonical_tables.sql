@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS canonical_event (event_id text PRIMARY KEY, schema_version text NOT NULL, source_system text NOT NULL, source_domain text NOT NULL, event_type text NOT NULL, event_time timestamptz NOT NULL, ingested_at timestamptz NOT NULL, plant text NOT NULL, vin text, correlation_key text, quality_status text NOT NULL, body jsonb NOT NULL);
+CREATE INDEX IF NOT EXISTS ix_canonical_event_vin_time ON canonical_event(vin,event_time DESC);
+CREATE TABLE IF NOT EXISTS vehicle_genome (genome_key text PRIMARY KEY, vin text, updated_at timestamptz NOT NULL, genome jsonb NOT NULL);
+CREATE TABLE IF NOT EXISTS smartq_decision (decision_id text PRIMARY KEY, genome_key text NOT NULL, created_at timestamptz NOT NULL, status text NOT NULL, human_review_required boolean NOT NULL DEFAULT true, decision jsonb NOT NULL);

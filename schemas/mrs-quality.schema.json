@@ -1,0 +1,63 @@
+{
+  "title": "MRS Quality Source",
+  "type": "object",
+  "required": [
+    "uniqueID",
+    "timestamp",
+    "qualityStatement"
+  ],
+  "properties": {
+    "uniqueID": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string"
+    },
+    "vin": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "station": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "assetId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "operation": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "qualityStatement": {
+      "type": "string"
+    },
+    "faultCode": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "faultCodeText": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "repairState": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

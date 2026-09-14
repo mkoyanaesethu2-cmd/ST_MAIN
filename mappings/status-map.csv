@@ -1,0 +1,15 @@
+source,source_value,canonical_status
+MRS,IO,OK
+MRS,OK,OK
+MRS,NIO,NOK
+MRS,NOK,NOK
+MRS,REWORK,REWORK
+Geometry,within_limit,OK
+Geometry,near_limit,TREND
+Geometry,outside_limit,NOK
+Pairing,best_approved,OK
+Pairing,secondary,TREND
+Pairing,do_not_use,NOK
+MSB,normal,OK
+MSB,drift,TREND
+MSB,fault,NOK

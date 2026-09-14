@@ -1,0 +1,252 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PredictIQ Canonical Manufacturing Event",
+  "type": "object",
+  "required": [
+    "event_id",
+    "source_system",
+    "source_domain",
+    "event_type",
+    "event_time",
+    "ingested_at",
+    "plant",
+    "quality",
+    "payload"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "event_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_system": {
+      "type": "string"
+    },
+    "source_domain": {
+      "enum": [
+        "part_geometry",
+        "geometry_pairing",
+        "technical_equipment",
+        "mrs_quality",
+        "assembly_ec",
+        "maintenance",
+        "supplier",
+        "knowledge"
+      ]
+    },
+    "event_type": {
+      "type": "string"
+    },
+    "event_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "ingested_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "plant": {
+      "type": "string"
+    },
+    "vin": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "part": {
+      "type": "object",
+      "properties": {
+        "part_number": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "batch_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "supplier_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "location": {
+      "type": "object",
+      "properties": {
+        "shop": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "line": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "station": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "asset": {
+      "type": "object",
+      "properties": {
+        "asset_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "robot": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "controller": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "tool": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "feature": {
+      "type": "object",
+      "properties": {
+        "feature_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "operation": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "parameter": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "measurement": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": [
+            "number",
+            "string",
+            "null"
+          ]
+        },
+        "unit": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "lower_limit": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "upper_limit": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      }
+    },
+    "quality": {
+      "type": "object",
+      "required": [
+        "status"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "OK",
+            "NOK",
+            "TREND",
+            "REWORK",
+            "UNKNOWN"
+          ]
+        },
+        "fault_code": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fault_text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "confidence": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "trace": {
+      "type": "object",
+      "properties": {
+        "correlation_key": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_record_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "raw_hash": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "payload": {
+      "type": "object"
+    }
+  }
+}

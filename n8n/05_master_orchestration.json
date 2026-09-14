@@ -1,0 +1,126 @@
+{
+  "name": "05_PredictIQ_Genome_SmartQ_Orchestration",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "predictiq/normalized-event",
+        "responseMode": "responseNode"
+      },
+      "id": "n1",
+      "name": "Receive Canonical Event",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const e=$json.body||$json; if(e.schema_version!=='1.0.0') throw new Error('Unsupported schema version'); return [{json:e}];"
+      },
+      "id": "n2",
+      "name": "Canonical Gate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const e=$json; return [{json:{...e,genome_key:e.vin||e.trace.correlation_key,genome_patch:{source_domain:e.source_domain,event_id:e.event_id,event_time:e.event_time,part:e.part,location:e.location,asset:e.asset,feature:e.feature,measurement:e.measurement,quality:e.quality}}}];"
+      },
+      "id": "n3",
+      "name": "Build Vehicle Genome Patch",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const e=$json; const shouldEvaluate=!!e.vin && ['NOK','TREND','REWORK'].includes(e.quality.status); return [{json:{...e,should_evaluate:shouldEvaluate,smartq_request:{genome_key:e.genome_key,reason:e.quality.status,knowledge_scopes:['previous_results','verified_solutions','tactical_documents','quality_standards']}}}];"
+      },
+      "id": "n4",
+      "name": "Create SmartQ Evaluation Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        700,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { accepted: true, genome_key: $json.genome_key, smartq_evaluation_requested: $json.should_evaluate, human_review_required: true } }}"
+      },
+      "id": "n5",
+      "name": "Return Orchestration Status",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        940,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Receive Canonical Event": {
+      "main": [
+        [
+          {
+            "node": "Canonical Gate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Canonical Gate": {
+      "main": [
+        [
+          {
+            "node": "Build Vehicle Genome Patch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Vehicle Genome Patch": {
+      "main": [
+        [
+          {
+            "node": "Create SmartQ Evaluation Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create SmartQ Evaluation Request": {
+      "main": [
+        [
+          {
+            "node": "Return Orchestration Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "notes": "Replace demo handoff with approved database/API nodes and credentials in the internal hosted n8n environment."
+  }
+}

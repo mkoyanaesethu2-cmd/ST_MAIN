@@ -1,0 +1,87 @@
+{
+  "title": "MSB Technical Equipment Source",
+  "type": "object",
+  "required": [
+    "timestamp",
+    "plant",
+    "assetId",
+    "parameter",
+    "value"
+  ],
+  "properties": {
+    "timestamp": {
+      "type": "string"
+    },
+    "plant": {
+      "type": "string"
+    },
+    "line": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "station": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "vin": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "assetId": {
+      "type": "string"
+    },
+    "robot": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "controller": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "tool": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "parameter": {
+      "type": "string"
+    },
+    "value": {},
+    "unit": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "lowerLimit": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "upperLimit": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "topic": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

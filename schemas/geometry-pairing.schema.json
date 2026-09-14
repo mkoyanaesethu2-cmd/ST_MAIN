@@ -1,0 +1,41 @@
+{
+  "title": "Geometry Pairing Source",
+  "type": "object",
+  "required": [
+    "pairingId",
+    "timestamp",
+    "vin",
+    "candidatePart",
+    "compatibility"
+  ],
+  "properties": {
+    "pairingId": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string"
+    },
+    "vin": {
+      "type": "string"
+    },
+    "candidatePart": {
+      "type": "string"
+    },
+    "partGeometryMeasurementId": {
+      "type": "string"
+    },
+    "compatibility": {
+      "type": "number"
+    },
+    "predictedFlush": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "decision": {
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

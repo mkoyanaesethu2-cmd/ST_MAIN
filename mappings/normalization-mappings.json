@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0.0",
+  "canonical_target": "canonical-event.schema.json",
+  "sources": {
+    "part_geometry": {
+      "event_id": "measurementId",
+      "event_time": "timestamp",
+      "vin": "vin",
+      "part.part_number": "partNumber",
+      "part.batch_id": "batchId",
+      "feature.feature_id": "feature",
+      "measurement.value": "measuredValue",
+      "measurement.unit": "unit",
+      "measurement.lower_limit": "lowerLimit",
+      "measurement.upper_limit": "upperLimit",
+      "location.station": "station",
+      "quality.status": "derive(measuredValue,lowerLimit,upperLimit)"
+    },
+    "geometry_pairing": {
+      "event_id": "pairingId",
+      "event_time": "timestamp",
+      "vin": "vin",
+      "part.part_number": "candidatePart",
+      "trace.source_record_id": "partGeometryMeasurementId",
+      "measurement.value": "predictedFlush",
+      "measurement.unit": "literal:mm",
+      "quality.confidence": "compatibility / 100",
+      "quality.status": "map(decision)"
+    },
+    "msb_technical": {
+      "event_id": "concat(assetId,timestamp,parameter)",
+      "event_time": "timestamp",
+      "plant": "plant",
+      "vin": "vin",
+      "location.line": "line",
+      "location.station": "station",
+      "asset.asset_id": "assetId",
+      "asset.robot": "robot",
+      "asset.controller": "controller",
+      "asset.tool": "tool",
+      "feature.parameter": "parameter",
+      "measurement.value": "value",
+      "measurement.unit": "unit",
+      "measurement.lower_limit": "lowerLimit",
+      "measurement.upper_limit": "upperLimit",
+      "quality.status": "derive(value,lowerLimit,upperLimit)"
+    },
+    "mrs_quality": {
+      "event_id": "uniqueID",
+      "event_time": "timestamp",
+      "vin": "vin",
+      "location.station": "station",
+      "asset.asset_id": "assetId",
+      "feature.operation": "operation",
+      "quality.status": "mapQuality(qualityStatement,repairState)",
+      "quality.fault_code": "faultCode",
+      "quality.fault_text": "faultCodeText"
+    }
+  }
+}
