@@ -88,6 +88,8 @@
   const titles={overview:'Plant Quality Control Tower',vehicle:'Vehicle Quality Genome',geometry:'Geometry-Compatible Part Pairing',smartq:'SmartQ AI Intelligence',knowledge:'SmartQ Knowledge Hub',solutions:'Root-Cause & Solution Copilot',maintenance:'Quality-Driven Maintenance',integration:'Data & Automation Architecture'};
   $$('.nav button').forEach(b=>b.addEventListener('click',()=>{ $$('.nav button').forEach(x=>x.classList.remove('active')); b.classList.add('active'); $$('.view').forEach(v=>v.classList.remove('active')); $('#'+b.dataset.view).classList.add('active'); $('#pageTitle').textContent=titles[b.dataset.view]; }));
   const toast=msg=>{const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)};
+  const vehicleProcessChart=$('#chart');
+  if(vehicleProcessChart){vehicleProcessChart.previousElementSibling?.remove();vehicleProcessChart.remove()}
   const knowledgeView=document.createElement('section');knowledgeView.className='view';knowledgeView.id='knowledge';knowledgeView.innerHTML=`
     <div class="notice"><b>SmartQ Knowledge Hub.</b> A governed reference database for current standards, approved processes, recovery tactics, equipment signatures, FMEAs and verified MRS outcomes. SmartQ uses this evidence to ground chatbot answers and Solution Copilot recommendations.</div>
     <div class="grid knowledge-kpis" style="margin-bottom:16px"><div class="card kpi cyan"><div class="label">Approved documents</div><div class="value" id="docCount">1,284</div><div class="delta">Current controlled revisions</div></div><div class="card kpi good"><div class="label">Quality standards</div><div class="value">346</div><div class="delta">Specifications and inspection plans</div></div><div class="card kpi warn"><div class="label">Recovery tactics</div><div class="value">219</div><div class="delta">Quality, process and equipment</div></div><div class="card kpi"><div class="label">Verified MRS cases</div><div class="value">8,412</div><div class="delta">Closed causes and outcomes</div></div></div>
@@ -119,7 +121,6 @@
   $('#askFromKnowledge').addEventListener('click',()=>{$('[data-view="smartq"]').click();setTimeout(()=>{addChat('user','Which standards and sources apply?');addChat('ai',smartqAnswers.standard)},120)});
   $('#generateQualityPlan').addEventListener('click',e=>{e.currentTarget.textContent='Plan generated';e.currentTarget.disabled=true;$('#planStatus').textContent='READY FOR APPROVAL';$('#planStatus').className='badge green';$('#planSubtitle').textContent='Quality evidence package QMP-2026-0914-07';toast('Quality-driven maintenance plan generated')});
   $('#openMaintenanceTactic').addEventListener('click',()=>{$('[data-view="solutions"]').click();toast('Approved BS-214 tactic opened in Solution Copilot')});
-  const heights=[31,34,29,36,38,35,42,40,44,43,49,46,52,55,51,59,56,62,66,63,70,74,78,84];const chart=$('#chart');heights.forEach((h,i)=>{const s=document.createElement('span');s.style.height=h+'%';s.title='Cycle '+(i+1)+': '+h;chart.appendChild(s)});
   $('#bodySelect').addEventListener('change',e=>{const vals=e.target.value==='b'?['88%','95%','69%']:['96%','78%','41%'];$$('.fit').forEach((x,i)=>x.textContent=vals[i]);$('#pairResult').style.display='none';$$('.part').forEach(p=>p.classList.remove('selected'))});
 </script>
 <script>
