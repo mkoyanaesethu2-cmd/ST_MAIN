@@ -241,5 +241,97 @@
     section.insertAdjacentElement('afterbegin',visual);
   });
 </script>
+<script>
+  // Door-fitment scenario aligned to the actual Body Shop and Assembly measurement flow.
+  const topContext=document.querySelector('.top p');
+  if(topContext) topContext.textContent='Vehicle EL-C206-18472 · AS41 + AS43 Inline Measurement · MA41 Left-Hand Door Installation';
+
+  const shops=document.querySelectorAll('#overview .shop');
+  const shopFlow=[
+    ['AS41 Inline Measurement','First Body Shop geometry result<br>LH aperture deviation +0.18 mm'],
+    ['AS43 Inline Measurement','Second Body Shop geometry result<br>LH aperture deviation +0.42 mm'],
+    ['IDZ Door Lines','Door geometry measured inline<br>candidate batch available'],
+    ['MA41 · Left-Hand Side','Best-fit front and rear doors<br>selected before installation'],
+    ['MRS Outcome','Gap and flush result<br>verified after fitment']
+  ];
+  shops.forEach((shop,i)=>{if(!shopFlow[i])return;shop.querySelector('b').textContent=shopFlow[i][0];shop.querySelector('span').innerHTML=shopFlow[i][1]});
+
+  const events=document.querySelectorAll('#overview .event');
+  const eventFlow=[
+    ['AS41 · Inline body measurement','Vehicle EL-C206-18472 records a +0.18 mm left-hand aperture deviation in the Vehicle Genome.'],
+    ['AS43 · Inline body measurement','The second geometry gate confirms the deviation direction at +0.42 mm before the body leaves Body Shop.'],
+    ['IDZ Door Lines · measured candidates','Inline door-geometry results identify the left-hand door set that best compensates for the measured body deviations.'],
+    ['SmartQ · MA41 fitment interception','SmartQ recommends the best-fit left-hand front and rear doors before installation at MA41.']
+  ];
+  events.forEach((event,i)=>{if(!eventFlow[i])return;event.querySelector('strong').textContent=eventFlow[i][0];event.querySelector('p').textContent=eventFlow[i][1]});
+
+  const whyLabels=document.querySelectorAll('#overview .why span');
+  ['AS41 body deviation','AS43 body deviation','IDZ door geometry match','Historical fitment similarity'].forEach((text,i)=>{if(whyLabels[i])whyLabels[i].textContent=text});
+  const riskLabel=document.querySelector('#overview .riskbox .label');if(riskLabel)riskLabel.textContent='MA41 left-hand door fitment risk';
+  document.getElementById('runBtn')?.addEventListener('click',()=>setTimeout(()=>{const r=document.getElementById('recommendation');if(r)r.textContent='Use the AS41 and AS43 body measurements to select the best-fit measured left-hand front and rear doors from the IDZ Door Lines batch before installation at MA41.'},1350));
+
+  const vehicleRows=document.querySelectorAll('#vehicle tbody tr');
+  const genomeRows=[
+    ['AS41','LH aperture deviation +0.18 mm','MEASURED','Initial body geometry'],
+    ['AS43','LH aperture deviation +0.42 mm','TREND','Confirmed fitment influence'],
+    ['IDZ Door Lines','LH door batch measured inline','CANDIDATES','Door geometry compatibility'],
+    ['MA41','Left-hand door installation approaching','INTERCEPTABLE','Gap and flush fitment'],
+    ['MRS Quality','Post-fitment result required','VERIFY','Close the outcome loop']
+  ];
+  vehicleRows.forEach((row,i)=>{if(!genomeRows[i])return;const cells=row.children;cells[0].innerHTML='<strong>'+genomeRows[i][0]+'</strong>';cells[1].textContent=genomeRows[i][1];cells[2].innerHTML='<span class="badge '+(i<1?'green':i<4?'amber':'green')+'">'+genomeRows[i][2]+'</span>';cells[3].textContent=genomeRows[i][3]});
+  const vehicleReason=document.querySelector('#vehicle aside .recommend p');if(vehicleReason)vehicleReason.textContent='These vehicles share the same AS41 and AS43 left-hand aperture-deviation pattern and are approaching MA41 with measured IDZ door candidates available.';
+
+  const bodyOptions=document.querySelectorAll('#bodySelect option');
+  if(bodyOptions[0])bodyOptions[0].textContent='EL-C206-18472 · AS41 +0.18 mm · AS43 +0.42 mm';
+  if(bodyOptions[1])bodyOptions[1].textContent='EL-C206-18481 · AS41 -0.08 mm · AS43 -0.11 mm';
+  const partCards=document.querySelectorAll('#geometry .part');
+  const doorSets=[
+    ['IDZ LH Door Set 031','Expected MA41 gap/flush +0.08 mm','Front and rear door geometry matched','Traceability complete'],
+    ['IDZ LH Door Set 026','Expected MA41 gap/flush +0.31 mm','Adjustment likely at MA41','Traceability complete'],
+    ['IDZ LH Door Set 119','Expected MA41 gap/flush +0.58 mm','Fit-risk threshold exceeded','Do not recommend']
+  ];
+  partCards.forEach((card,i)=>{if(!doorSets[i])return;card.querySelector('h3').textContent=doorSets[i][0];card.querySelectorAll('li').forEach((li,j)=>li.textContent=doorSets[i][j+1])});
+  const pairResult=document.getElementById('pairResult');if(pairResult)pairResult.innerHTML='<b>Recommended: IDZ LH Door Set 031.</b> Best match against the AS41 and AS43 body deviations, with predicted MA41 gap and flush of +0.08 mm and 96% compatibility. Human approval and post-fitment verification remain required.';
+
+  const gates=document.querySelectorAll('#smartq .quality-gate');
+  const gateFlow=[['AS41 Body Gate','First inline body-geometry measurement'],['AS43 Body Gate','Second inline measurement confirms deviation'],['IDZ Door Gate','Front and rear door geometry measured inline'],['MA41 Fitment','Best-fit left-hand doors selected'],['MRS Verification','Post-fitment gap and flush outcome']];
+  gates.forEach((gate,i)=>{if(!gateFlow[i])return;gate.querySelector('b').textContent=gateFlow[i][0];gate.querySelector('small').textContent=gateFlow[i][1]});
+  const smartqRiskText=document.querySelector('#smartq .riskbox p');if(smartqRiskText)smartqRiskText.textContent='The AS41 and AS43 measurements show a consistent left-hand aperture deviation. SmartQ compares this body geometry with measured IDZ door candidates before installation at MA41.';
+  const reasonRows=document.querySelectorAll('#smartq .reason-row > span:first-child');
+  ['AS43 body deviation','AS41 body deviation','IDZ door-set compatibility','Historical MA41 fitment similarity'].forEach((text,i)=>{if(reasonRows[i])reasonRows[i].textContent=text});
+  const handoff=document.querySelector('#smartq .recommend p');if(handoff)handoff.textContent='Send the AS41 and AS43 evidence with the ranked IDZ left-hand door candidates to Solution Copilot for controlled selection and MA41 fitment verification.';
+  smartqAnswers.risk='SmartQ combined the AS41 +0.18 mm and AS43 +0.42 mm left-hand body deviations with the measured IDZ door-set geometry. IDZ LH Door Set 031 provides the best predicted match for installation at MA41.';
+  smartqAnswers.action='Select IDZ LH Door Set 031 for the left-hand side at MA41, retain the AS41 and AS43 evidence in the Vehicle Genome, and verify the final gap-and-flush result through MRS after installation.';
+
+  const visualMarkers=document.querySelectorAll('#overview .visual-panel:nth-child(2) .ar-marker');
+  ['AS43 body deviation +0.42 mm','AS41 body deviation +0.18 mm','IDZ door geometry candidate'].forEach((text,i)=>{if(visualMarkers[i])visualMarkers[i].dataset.label=text});
+  const visualCaption=document.querySelector('#overview .visual-panel:nth-child(2) .visual-caption p');if(visualCaption)visualCaption.textContent='AS41 and AS43 establish the body deviation. PredictIQ then selects the measured IDZ left-hand door set with the best predicted gap-and-flush result at MA41.';
+  const contextFacts=document.querySelectorAll('#overview .visual-panel:first-child .problem-strip div');
+  const factFlow=[['AS41','Body geometry gate'],['AS43','Body geometry gate'],['IDZ','Door inline measurement'],['MA41','LH door installation']];
+  contextFacts.forEach((fact,i)=>{if(!factFlow[i])return;fact.querySelector('b').textContent=factFlow[i][0];fact.querySelector('span').textContent=factFlow[i][1]});
+
+  const vehicleVisual=document.querySelector('#vehicle .tab-visual-copy');if(vehicleVisual){vehicleVisual.querySelector('p').textContent='AS41 and AS43 body measurements, IDZ door-line results and the MA41 installation decision are aligned to one VIN and production timeline.'}
+  const geometryVisual=document.querySelector('#geometry .tab-visual-copy');if(geometryVisual){geometryVisual.querySelector('p').textContent='Measured AS41 and AS43 body deviations are compared with IDZ left-hand door geometry to select the best-fit set before MA41 installation.'}
+  const geometryFacts=document.querySelectorAll('#geometry .visual-facts span');
+  ['AS41 +0.18 mm','AS43 +0.42 mm','IDZ LH Set 031','MA41 +0.08 mm predicted'].forEach((text,i)=>{if(geometryFacts[i])geometryFacts[i].textContent=text});
+
+  const pgRows=document.querySelectorAll('#source-pg tbody tr');
+  if(pgRows[0])pgRows[0].innerHTML='<td>13:31:08</td><td><b>EL-C206-18472</b></td><td>AS41 · LH body aperture</td><td>+0.18 mm</td><td>Engineering limit</td><td><span class="badge amber">DEVIATION</span></td>';
+  if(pgRows[1])pgRows[1].innerHTML='<td>13:36:54</td><td><b>EL-C206-18472</b></td><td>AS43 · LH body aperture</td><td>+0.42 mm</td><td>Engineering limit</td><td><span class="badge amber">CONFIRMED</span></td>';
+  document.querySelector('#source-pg tbody')?.insertAdjacentHTML('beforeend','<tr><td>13:38:10</td><td><b>IDZ LH Set 031</b></td><td>IDZ Door Lines · inline geometry</td><td>Measured candidate</td><td>AS41 + AS43 match</td><td><span class="badge green">AVAILABLE</span></td></tr>');
+  const gpRows=document.querySelectorAll('#source-gp tbody tr');
+  if(gpRows[0])gpRows[0].innerHTML='<td>EL-C206-18472</td><td><b>IDZ LH Set 031</b></td><td>AS41 + AS43 matched</td><td>96%</td><td>+0.08 mm predicted</td><td><span class="badge green">BEST APPROVED</span></td>';
+  if(gpRows[1])gpRows[1].innerHTML='<td>EL-C206-18472</td><td>IDZ LH Set 026</td><td>AS41 + AS43 matched</td><td>78%</td><td>+0.31 mm predicted</td><td><span class="badge amber">SECONDARY</span></td>';
+
+  const solutionRows=document.querySelectorAll('#solutions tbody tr');
+  const solutionFlow=[
+    ['01','AS41/AS43 body aperture deviation','Both Body Shop inline stations confirm the same LH deviation direction','91%'],
+    ['02','IDZ door-set geometry compatibility','Door Set 031 best compensates for the measured body condition','86%'],
+    ['03','MA41 fitment sensitivity','Historical MRS results show adjustment risk for weaker pairings','74%']
+  ];
+  solutionRows.forEach((row,i)=>{if(!solutionFlow[i])return;row.innerHTML='<td>'+solutionFlow[i][0]+'</td><td><strong>'+solutionFlow[i][1]+'</strong></td><td>'+solutionFlow[i][2]+'</td><td><span class="badge '+(i===0?'red':'amber')+'">'+solutionFlow[i][3]+'</span></td>'});
+  const investigation=document.querySelector('#solutions .recommend p');if(investigation)investigation.textContent='1. Confirm AS41 and AS43 measurement validity. 2. Retrieve the measured IDZ left-hand door candidates. 3. Rank the front and rear door set against the body deviations. 4. Install the approved best-fit set at MA41. 5. Verify gap and flush through MRS after fitment.';
+  const historicalCase=document.querySelector('#solutions aside .riskbox p');if(historicalCase)historicalCase.textContent='A similar AS41/AS43 left-hand aperture pattern was successfully mitigated by selecting the closest measured IDZ door set before MA41 installation, reducing downstream adjustment.';
+</script>
 <script>document.querySelectorAll('.source-tabs button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.source-tabs button').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.source-pane').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById('source-'+b.dataset.source).classList.add('active')}));</script></body>
 </html>
