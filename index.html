@@ -490,28 +490,59 @@ document.querySelector('[data-view="geometry"] span').textContent='Geometry Pair
 // Keep the agreed second scenario visible without inventing the clinching case.
 const clinchingView=document.createElement('section');clinchingView.className='view';clinchingView.id='clinching';
 clinchingView.innerHTML=`
-  <section class="card pitch-card">
-    <div class="section-title"><h2>Clinching Analysis</h2><span class="badge amber">ILLUSTRATIVE DATA</span></div>
-    <div class="formgrid"><div class="field"><label for="clinchSample">Cycle sample</label><select id="clinchSample"><option value="stable">Stable cycles</option><option value="drift">Force trending low</option></select></div></div>
-    <button type="button" class="btn primary" id="clinchRun" style="margin:16px 0">Run analysis</button>
-    <div id="clinchResult" role="status"></div>
-    <div class="table-wrap"><table class="table"><thead><tr><th>Cycle</th><th>Peak force (% of sample baseline)</th></tr></thead><tbody id="clinchCycles"></tbody></table></div>
-  </section>`;
-const clinchSamples={stable:[100,101,99,100],drift:[100,97,94,91]};
-function renderClinchSample(){
-  const readings=clinchSamples[clinchingView.querySelector('#clinchSample').value];
-  clinchingView.querySelector('#clinchCycles').innerHTML=readings.map((value,index)=>'<tr><td>'+ (index+1)+'</td><td>'+value+'%</td></tr>').join('');
-  clinchingView.querySelector('#clinchResult').textContent='';
-  return readings;
+<section class="card pitch-card">
+<div class="section-title"><h2>Fender clinching · Broken die O-ring</h2><span class="badge amber">SIMULATED REPLAY</span></div>
+<div class="pitch-grid"><div><b>304+ units affected</b><p>Reported incident · loose fender clinch points</p></div><div><b>Controller OK</b><p>Reference re-taught with the broken O-ring</p></div><div><b>SmartQ baseline</b><p>Last validated curve for the same profile · MSB via MQTT</p></div></div>
+<button type="button" class="btn primary" id="clinchRun">Replay 10 units</button>
+<button type="button" class="btn" id="clinchNext">Next unit</button>
+<button type="button" class="btn" id="clinchReset">Reset</button>
+<p id="clinchProgress"></p><div id="clinchStatus" role="status" class="notice"></div>
+<div class="table-wrap"><table class="table"><thead><tr><th>Curve feature</th><th>Validated reference</th><th>Re-taught reference</th><th>Current unit</th><th>Change vs validated</th></tr></thead><tbody id="clinchCurve"></tbody></table></div>
+<p class="delta">Illustrative measurements and thresholds. Warning after 10 consecutive units outside a demo limit.</p>
+</section>
+<section class="card pitch-card"><h2>Containment opportunity</h2><div class="pitch-grid"><div><b>304 units</b><p>Conservative illustration based on the reported incident</p></div><div><b>10 units</b><p>Hold and inspect at the warning</p></div><div><b>294 potentially avoided</b><p>If production stops at the warning and resumes after repair and joint verification.</p></div></div></section>`;
+const clinchFeatures=[
+  {name:'Early forming force',good:9,taught:9,limit:2,unit:'kN'},
+  {name:'Deep drawing force',good:19,taught:12,limit:4,unit:'kN'},
+  {name:'Compression force',good:29,taught:23,limit:4,unit:'kN'},
+  {name:'Final force',good:34,taught:29,limit:3,unit:'kN'},
+  {name:'Final displacement',good:5.08,taught:5.42,limit:0.2,unit:'mm'}
+];
+const clinchEl=id=>clinchingView.querySelector('#'+id);
+let clinchUnit=0,clinchStreak=0,clinchTimer=null;
+function renderClinchReplay(values=[]){
+  clinchEl('clinchCurve').innerHTML=clinchFeatures.map((f,i)=>{
+    const fmt=value=>value.toFixed(f.unit==='mm'?2:1)+' '+f.unit;
+    const change=values[i]-f.good;
+    const current=Number.isFinite(change);
+    return '<tr><td>'+f.name+'</td><td>'+fmt(f.good)+'</td><td>'+fmt(f.taught)+'</td><td>'+(current?fmt(values[i]):'—')+'</td><td class="'+(Math.abs(change)>f.limit?'warn':'')+'">'+(current?(change>0?'+':'')+fmt(change):'—')+'</td></tr>';
+  }).join('');
+  clinchEl('clinchProgress').textContent='Units replayed '+clinchUnit+'/10 · Consecutive deviations '+clinchStreak+'/10';
+  clinchEl('clinchStatus').textContent=clinchUnit===0?'Ready to replay':clinchStreak===10?'SMARTQ WARNING · Controller OK · Stop and inspect the die and joints. Hold the 10 suspect units.':'Controller OK · SmartQ tracking deviation';
+  clinchEl('clinchStatus').className=clinchStreak===10?'notice warn':'notice';
+  clinchEl('clinchRun').disabled=clinchTimer!==null||clinchUnit===10;
+  clinchEl('clinchNext').disabled=clinchEl('clinchRun').disabled;
 }
-clinchingView.querySelector('#clinchSample').addEventListener('change',renderClinchSample);
-clinchingView.querySelector('#clinchRun').addEventListener('click',()=>{
-  const readings=renderClinchSample();
-  const drop=readings[0]-readings.at(-1);
-  const drift=drop>=6 && readings.slice(1).every((value,index)=>value<readings[index]);
-  clinchingView.querySelector('#clinchResult').innerHTML='<p><strong class="'+(drift?'warn':'good')+'">'+(drift?'Drift flagged · Review sample':'Stable sample')+'</strong> · Peak force '+readings[0]+'% → '+readings.at(-1)+'%</p><p class="delta">Demo rule: flag three consecutive drops totalling at least 6 percentage points.</p>';
+function stepClinchReplay(){
+  if(clinchUnit>=10)return;
+  clinchUnit++;
+  const variation=(clinchUnit%3-1)*0.2;
+  const values=clinchFeatures.map(f=>f.taught+variation*(f.unit==='mm'?0.1:1));
+  clinchStreak=clinchFeatures.some((f,i)=>Math.abs(values[i]-f.good)>f.limit)?clinchStreak+1:0;
+  if(clinchUnit===10){clearInterval(clinchTimer);clinchTimer=null;}
+  renderClinchReplay(values);
+}
+clinchEl('clinchRun').addEventListener('click',()=>{
+  clinchTimer=setInterval(stepClinchReplay,420);
+  stepClinchReplay();
 });
-renderClinchSample();
+clinchEl('clinchNext').addEventListener('click',stepClinchReplay);
+clinchEl('clinchReset').addEventListener('click',()=>{
+  clearInterval(clinchTimer);clinchTimer=null;
+  clinchUnit=0;clinchStreak=0;
+  renderClinchReplay();
+});
+renderClinchReplay();
 document.querySelector('.content').appendChild(clinchingView);
 const clinchingNav=document.createElement('button');clinchingNav.dataset.view='clinching';clinchingNav.innerHTML='<i class="dot"></i><span>Clinching Analysis</span>';
 document.querySelector('[data-view="geometry"]').insertAdjacentElement('afterend',clinchingNav);
