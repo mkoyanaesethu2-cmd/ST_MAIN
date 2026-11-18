@@ -47,7 +47,7 @@
   @media(max-width:560px){.fds-steps{grid-template-columns:1fr}.fds-head{display:block}.fds-head .badge{margin-top:9px}}
 </style><style>
 .pitch-card{margin-bottom:16px}.pitch-card h2{font-size:1.45rem;margin:10px 0}.pitch-card h3{font-size:1.1rem;margin-top:22px}.pitch-card p{color:var(--silver);font-size:.85rem;line-height:1.6}.pitch-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:18px 0}.pitch-grid>div{padding:12px;border:1px solid var(--line);border-radius:9px}.pitch-grid label{font-size:.8rem;color:var(--silver)}.pitch-grid input{width:100%;margin-top:8px;padding:10px;border:1px solid var(--line);border-radius:8px;background:#080d12;color:white;font:inherit}details.support-detail{margin:16px 0;padding:14px;border:1px solid var(--line);border-radius:12px}summary{cursor:pointer;color:var(--cyan);font-size:.85rem;padding:8px 0}.nav details{border-top:1px solid var(--line);margin-top:10px}.nav details summary{font-size:.75rem}.nav details button{width:100%}#valueResult{font-weight:750;color:var(--green)}@media(max-width:700px){.pitch-grid{grid-template-columns:1fr}.nav details{margin:0;border:0}.nav details summary{padding:10px;white-space:nowrap}.nav details[open]{position:fixed;bottom:64px;left:0;right:0;background:var(--panel);max-height:60vh;overflow:auto}.nav details[open] button{justify-content:flex-start}.nav details[open] button span{display:inline}}
-</style></head>
+</style><style>[hidden]{display:none!important}</style></head>
 <body>
 <div class="app">
   <aside class="side">
@@ -531,6 +531,7 @@ function stepClinchReplay(){
   clinchStreak=clinchFeatures.some((f,i)=>Math.abs(values[i]-f.good)>f.limit)?clinchStreak+1:0;
   if(clinchUnit===10){clearInterval(clinchTimer);clinchTimer=null;}
   renderClinchReplay(values);
+  document.dispatchEvent(new Event('predictiq-case-update'));
 }
 clinchEl('clinchRun').addEventListener('click',()=>{
   clinchTimer=setInterval(stepClinchReplay,420);
@@ -571,5 +572,75 @@ legacyRun.hidden=false;
 legacyRun.textContent='Run supporting simulation';
 document.querySelector('[data-view="geometry"]').click();
 
+</script><script>
+const caseSwitch=document.createElement('select');
+caseSwitch.className='select';
+caseSwitch.style.display='inline-block';
+caseSwitch.setAttribute('aria-label','Active PredictIQ scenario');
+caseSwitch.innerHTML='<option value="geometry">Geometry Pairing</option><option value="clinching">Clinching Analysis</option>';
+const plantSelect=document.querySelector('.actions select');
+plantSelect.replaceWith(caseSwitch);
+document.querySelector('.top p').textContent='East London · Simulated plant evidence';
+const caseViews={
+  vehicle:'Vehicle Genome',
+  smartq:'SmartQ AI',
+  knowledge:'Knowledge Hub',
+  solutions:'Solution Copilot',
+  maintenance:'Quality Maintenance',
+  integration:'Data & Automation'
+};
+for(const id of Object.keys(caseViews)){
+  const view=document.getElementById(id);
+  for(const child of view.children)child.hidden=true;
+  const panel=document.createElement('section');
+  panel.className='card pitch-card';
+  panel.id='case-panel-'+id;
+  view.appendChild(panel);
+}
+technicalDetail.hidden=true;
+valueDetails.hidden=true;
+const caseValue=document.createElement('section');
+caseValue.className='card pitch-card';
+document.getElementById('overview').prepend(caseValue);
+function renderPlatformCase(){
+  const clinch=caseSwitch.value==='clinching';
+  const body=geometryBodies.find(item=>item.vin===document.getElementById('geometryVin').value);
+  const type=document.getElementById('geometryDoorType').value;
+  const batch=rankGeometryBatches(body,geometryBatches[type])[0];
+  const station=type==='rear'?150:200;
+  const subject=clinch?'Fender clinch points · replay unit '+clinchUnit:body.vin+' · MA41 Station '+station;
+  const evidence=clinch?'MSB / MQTT · same-profile force–displacement curves · validated reference and re-taught reference':'AS43 '+signedMm(body.as43)+' · IDZ '+batch.id+' / '+batch.line+' · batch deviation '+signedMm(batch.deviation);
+  const signal=clinch?(clinchUnit===0?'Awaiting replay':clinchStreak===10?'SmartQ warning · controller OK':'Controller OK · SmartQ tracking '+clinchStreak+'/10 consecutive deviations'):'Recommended '+batch.id+' · '+batch.difference.toFixed(2)+' mm geometry difference · approval pending';
+  const sections={
+    vehicle:[['Trace',subject],['Linked evidence',evidence],['Quality outcome','MRS verification pending']],
+    smartq:[['Finding',signal],['Evidence',evidence],['Check',clinch?'Deep drawing, compression, final force and final displacement':'Rank released batches by geometry difference. Held batches are excluded.']],
+    knowledge:[['Reference',clinch?'Clinching manuals §§1.9 and 4.5 · joint quality and force–displacement monitoring':'AS41/AS43 Body Shop measurements · IDZ door geometry · VMT Bestfit at MA41'],['Review evidence',clinch?'Approved same-profile curve, teach-in history and physical joint measurements':'Door side, variant, batch release and approved geometry criteria']],
+    solutions:[['Decision status',signal],['Proposed response',clinch?(clinchStreak===10?'Request a stop, hold the 10 suspect units and inspect the die and clinch points.':'Continue monitoring the replay for a persistent deviation.'):'Confirm batch eligibility, have an authorised specialist approve the match, and verify the fit at MA41.'],['Verification','Record the physical outcome in MRS.']],
+    maintenance:[['Work status',clinch?(clinchStreak===10?'Inspection requested for review':'Awaiting SmartQ warning'):'No maintenance task proposed for this pairing'],['Check',clinch?'Inspect the die O-ring and sliding pieces under approved plant procedures. Verify joint quality before restart.':'Review VMT regulation records if errors persist with an eligible batch.']],
+    integration:[['Source',evidence],['Correlation',clinch?'Tool, profile, cycle and unit IDs. Preserve reference revisions.':'VIN, door batch, IDZ line and MA41 station.'],['Output',clinch?'Evaluate each curve independently of controller OK, then link the disposition to the quality result.':'Send the recommended batch for review and link the MA41/MRS outcome.']]
+  };
+  const link='<button type="button" class="btn primary" data-open-case>Open '+(clinch?'Clinching Analysis':'Geometry Pairing')+'</button>';
+  for(const [id,rows] of Object.entries(sections)){
+    document.getElementById('case-panel-'+id).innerHTML='<div class="label cyan">'+subject+'</div><h2>'+caseViews[id]+'</h2><div class="pitch-grid">'+rows.map(([label,value])=>'<div><b>'+label+'</b><p>'+value+'</p></div>').join('')+'</div>'+link;
+  }
+  caseValue.innerHTML='<h2>'+ (clinch?'Clinching Analysis':'Geometry Pairing')+'</h2><p>'+ (clinch?'304 units in the comparison. A stop at unit 10 could leave 10 to inspect and avoid up to 294 affected units in the simulation.':'Track VMT regulation stops, downtime minutes and first-pass fit. Use verified time recovered and rework avoided to estimate savings.')+'</p>'+link;
+}
+caseSwitch.addEventListener('change',()=>{
+  const active=document.querySelector('.view.active')?.id;
+  if(active==='geometry'||active==='clinching')document.querySelector('[data-view="'+caseSwitch.value+'"]').click();
+  renderPlatformCase();
+});
+document.querySelector('.nav').addEventListener('click',event=>{
+  const id=event.target.closest('button[data-view]')?.dataset.view;
+  if(id==='geometry'||id==='clinching')caseSwitch.value=id;
+  if(id)renderPlatformCase();
+});
+document.querySelector('.content').addEventListener('click',event=>{
+  if(event.target.closest('[data-open-case]'))document.querySelector('[data-view="'+caseSwitch.value+'"]').click();
+  if(event.target.closest('#clinchReset'))renderPlatformCase();
+});
+for(const id of ['geometryVin','geometryDoorType'])document.getElementById(id).addEventListener('change',renderPlatformCase);
+document.addEventListener('predictiq-case-update',renderPlatformCase);
+renderPlatformCase();
 </script></body>
 </html>
