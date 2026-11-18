@@ -448,5 +448,73 @@ function updatePilotValue(){
 updatePilotValue();
 document.getElementById('recommendation').textContent='Continue monitoring the simulated AS41/AS43 body measurements and IDZ door geometry.';
 document.getElementById('runBtn').addEventListener('click',()=>setTimeout(()=>{document.getElementById('recommendation').textContent='Review the six synthetic VINs, validate AS41/AS43 measurements, rank approved IDZ left-hand door sets and verify the selected fit at MA41 through MRS.'},1250));
+</script><script>
+// Scenario 1: batch geometry matching. All numbers below are illustrative.
+const geometryBodies = [
+  {vin:'EL-C206-18472', as41:0.35, as43:0.42},
+  {vin:'EL-C206-18481', as41:-0.08, as43:-0.12},
+  {vin:'EL-C206-18486', as41:0.06, as43:0.09}
+];
+const geometryBatches = {
+  rear:[{id:'R-A',line:'FD41',deviation:0.38,released:true},{id:'R-B',line:'FD42',deviation:-0.10,released:true},{id:'R-C',line:'FD41',deviation:0.10,released:true},{id:'R-HOLD',line:'FD42',deviation:0.80,released:false}],
+  front:[{id:'F-A',line:'FA42',deviation:0.39,released:true},{id:'F-B',line:'FA41',deviation:-0.09,released:true},{id:'F-C',line:'FA42',deviation:0.08,released:true},{id:'F-HOLD',line:'FA41',deviation:0.80,released:false}]
+};
+function rankGeometryBatches(body,batches){
+  return batches.filter(batch=>batch.released).map(batch=>({...batch,difference:Math.abs(body.as43-batch.deviation)})).sort((a,b)=>a.difference-b.difference||a.id.localeCompare(b.id));
+}
+const signedMm=n=>(n>=0?'+':'')+n.toFixed(2)+' mm';
+const geometryView=document.getElementById('geometry');
+geometryView.innerHTML=`
+  <article class="card pitch-card">
+    <div class="label cyan">SCENARIO 1 · GEOMETRY PAIRING & ANALYSIS</div>
+    <h2>Match each body to the best available door batch.</h2>
+    <p><b>The experienced issue:</b> door geometry deviations can prevent the VMT Bestfit system from reaching the required fit position at MA41. The resulting regulation error interrupts production.</p>
+    <div class="pitch-grid"><div><b>1 · Measure</b><p>Keep the AS41 body history and use the final AS43 measurements. Link each IDZ door to its batch and measured geometry.</p></div><div><b>2 · Match</b><p>Compare each body with eligible door batches. Recommend the closest compatible measured batch before the doors reach fitment.</p></div><div><b>3 · Fit & verify</b><p>Approve the selection, fit with VMT Bestfit at MA41, then record regulation and final quality results.</p></div></div>
+    <div class="table-wrap"><table class="table"><thead><tr><th>Door type</th><th>Built in IDZ</th><th>Merged to body</th><th>Fitment system</th></tr></thead><tbody><tr><td><strong>Rear doors</strong></td><td>FD41 / FD42</td><td>MA41 · Station 150</td><td>VMT Bestfit</td></tr><tr><td><strong>Front doors</strong></td><td>FA42 / FA41</td><td>MA41 · Station 200</td><td>VMT Bestfit</td></tr></tbody></table></div>
+  </article>
+  <section class="card pitch-card">
+    <div class="section-title"><div><h2>Try a body-to-batch match</h2><p>Synthetic measurements illustrate the previously experienced issue.</p></div><span class="badge amber">ILLUSTRATIVE DATA</span></div>
+    <div class="formgrid"><div class="field"><label for="geometryVin">Body measured at AS43</label><select id="geometryVin">${geometryBodies.map(b=>`<option value="${b.vin}">${b.vin} · AS43 ${signedMm(b.as43)}</option>`).join('')}</select></div><div class="field"><label for="geometryDoorType">Door type / fitment station</label><select id="geometryDoorType"><option value="rear">Rear · FD41 / FD42 · MA41 Station 150</option><option value="front">Front · FA42 / FA41 · MA41 Station 200</option></select></div></div>
+    <button type="button" class="btn primary" id="pairBtn" style="margin-top:16px">Match door batch</button>
+    <div id="geometryMatch" role="status" aria-live="polite" style="margin-top:16px"></div>
+    <details><summary>Compare the measured batches</summary><div class="table-wrap"><table class="table"><thead><tr><th>Batch</th><th>IDZ line</th><th>Door deviation</th><th>Difference to body</th><th>Decision</th></tr></thead><tbody id="geometryBatchRows"></tbody></table></div></details>
+    <div class="notice" style="margin:14px 0 0"><b>Out-of-spec is a hold.</b> The hold batch represents the geometry problem. It is excluded from automatic recommendations; body matching does not release a nonconforming door. Quality / engineering must approve any disposition.</div>
+  </section>
+  <section class="card pitch-card"><h2>Every body gets its own batch recommendation</h2><p>Illustrative available batches · selection changes with each body’s AS43 result.</p><div class="table-wrap"><table class="table"><thead><tr><th>Body / VIN</th><th>AS43 result</th><th>Rear batch · Station 150</th><th>Front batch · Station 200</th></tr></thead><tbody>${geometryBodies.map(b=>`<tr><td><strong>${b.vin}</strong></td><td>${signedMm(b.as43)}</td><td>${rankGeometryBatches(b,geometryBatches.rear)[0].id} · ${rankGeometryBatches(b,geometryBatches.rear)[0].line}</td><td>${rankGeometryBatches(b,geometryBatches.front)[0].id} · ${rankGeometryBatches(b,geometryBatches.front)[0].line}</td></tr>`).join('')}</tbody></table></div></section>
+  <section class="card pitch-card"><h2>Prove the reduction in regulation stops</h2><p>Compare geometry-related VMT regulation errors, stoppage minutes and first-pass fit before and during the pilot. Record the VIN, door batch, IDZ line, AS43 evidence and MA41 outcome for each fit.</p><p><b>Value calculation:</b> verified geometry-related downtime minutes avoided × Finance-approved cost per minute + separately verified rework savings − intervention and system costs. No downtime saving is claimed until these inputs are measured; overlapping costs must only be counted once.</p><details><summary>How to interpret this demonstration</summary><p>The display ranks released batches using the absolute difference between one illustrative AS43 body value and one door-batch value. Lower means closer in this simplified example. It is not a VMT kinematic model, a predicted final gap/flush value or a plant tolerance. AS41 is retained as earlier measurement context.</p><p>A pilot must use the approved multi-feature geometry model, measurement validity, exact door side and variant, engineering limits, individual-door traceability and current stock. The table shows independent recommendations, not reserved batch inventory. Validate within-batch variation before relying on batch summaries. If no candidate meets the approved constraints, hold and escalate instead of forcing a match.</p></details></section>`;
+function renderGeometryMatch(){
+  const body=geometryBodies.find(b=>b.vin===document.getElementById('geometryVin').value);
+  const type=document.getElementById('geometryDoorType').value;
+  const batches=geometryBatches[type],ranked=rankGeometryBatches(body,batches),best=ranked[0];
+  const station=type==='rear'?'150':'200';
+  document.getElementById('geometryMatch').innerHTML=best?`<div class="riskbox" style="border-color:var(--green)"><div class="label">Recommended batch · human approval required</div><div class="value good">${best.id} · ${best.line}</div><p>${body.vin}: AS43 <b>${signedMm(body.as43)}</b> → door batch <b>${signedMm(best.deviation)}</b> → MA41 Station <b>${station}</b>.</p><p>Closest illustrative geometry difference: <b>${best.difference.toFixed(2)} mm</b>. Aim: reduce geometry-related VMT Bestfit regulation errors.</p></div>`:'<div class="notice"><b>No released batch available.</b> Hold and request a quality / engineering review.</div>';
+  document.getElementById('geometryBatchRows').innerHTML=[...ranked,...batches.filter(b=>!b.released)].map(batch=>`<tr><td><strong>${batch.id}</strong></td><td>${batch.line}</td><td>${signedMm(batch.deviation)}</td><td>${batch.released?Math.abs(body.as43-batch.deviation).toFixed(2)+' mm':'Not ranked'}</td><td><span class="badge ${!batch.released?'red':batch.id===best?.id?'green':'amber'}">${!batch.released?'HOLD · OUT OF SPEC':batch.id===best?.id?'RECOMMENDED':'ALTERNATIVE'}</span></td></tr>`).join('');
+}
+document.getElementById('pairBtn').addEventListener('click',renderGeometryMatch);
+['geometryVin','geometryDoorType'].forEach(id=>document.getElementById(id).addEventListener('change',renderGeometryMatch));
+renderGeometryMatch();
+titles.geometry='Scenario 1 · Door geometry pairing';
+document.querySelector('[data-view="geometry"] span').textContent='1 · Door batch pairing';
+// Keep the agreed second scenario visible without inventing the clinching case.
+const clinchingView=document.createElement('section');clinchingView.className='view';clinchingView.id='clinching';
+clinchingView.innerHTML='<article class="card pitch-card"><div class="label cyan">SCENARIO 2 · CLINCHING PREDICTIVE ANALYSIS</div><h2>Predictive analysis of clinching.</h2><p>This is the second selected scenario, based on an issue previously experienced at the plant. Its station, failure mode, measured signals and verified outcome will be added when the case details are supplied.</p><span class="badge amber">CASE DETAILS PENDING</span></article>';
+document.querySelector('.content').appendChild(clinchingView);
+const clinchingNav=document.createElement('button');clinchingNav.dataset.view='clinching';clinchingNav.innerHTML='<i class="dot"></i><span>2 · Clinching analysis</span>';
+document.querySelector('[data-view="geometry"]').insertAdjacentElement('afterend',clinchingNav);
+clinchingNav.addEventListener('click',()=>{document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));clinchingNav.classList.add('active');document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));clinchingView.classList.add('active');document.getElementById('pageTitle').textContent='Scenario 2 · Clinching predictive analysis'});
+// Vehicle history remains available as supporting context, not a third scenario.
+supportingNav.prepend(document.querySelector('[data-view="vehicle"]'));
+document.querySelector('#overview > .notice').innerHTML='<b>MBSA SharkTank AI · two scenarios.</b> Door geometry pairing and clinching predictive analysis, both based on issues previously experienced at the plant. This public demonstration uses illustrative data and has no live production-system connection.';
+const pitch=document.querySelector('#overview .pitch-card');
+pitch.querySelector('h2').textContent='Use measurement evidence to prevent the next production issue.';
+pitch.querySelector('h2 + p').textContent='Two focused scenarios: match each measured body to a compatible IDZ door batch before VMT Bestfit installation, and use clinching data for predictive analysis. Scenario 1 is ready to explore; the clinching case awaits its specific evidence.';
+pitch.querySelector('.pitch-grid').innerHTML='<div><b>1 · Door geometry pairing</b><p>AS43 body results matched to measured IDZ door batches for MA41 Stations 150 and 200.</p></div><div><b>2 · Clinching prediction</b><p>A second experienced issue, with the station, signals and failure details still to be supplied.</p></div><div><b>Measured business value</b><p>Verify fewer regulation stops, less downtime and improved first-pass quality.</p></div>';
+pitch.querySelector('.delta').textContent='Two scenario scope. Broader platform capabilities remain in supporting detail.';
+document.getElementById('startFocusedDemo').textContent='Explore door batch pairing';
+const oldExample=document.getElementById('pilotValue');
+const valueDetails=document.createElement('details');valueDetails.className='support-detail';valueDetails.innerHTML='<summary>Earlier illustrative rework-cost model · supporting assumptions</summary>';
+oldExample.parentNode.insertBefore(valueDetails,oldExample);valueDetails.appendChild(oldExample);
+document.querySelector('.top p').textContent='MBSA SharkTank AI · Door batch pairing + clinching prediction';
+
 </script></body>
 </html>
