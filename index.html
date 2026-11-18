@@ -466,34 +466,34 @@ const signedMm=n=>(n>=0?'+':'')+n.toFixed(2)+' mm';
 const geometryView=document.getElementById('geometry');
 geometryView.innerHTML=`
   <section class="card pitch-card">
-    <div class="section-title"><div><h2>Run door batch matching</h2><p>Select an AS43 body and door type to see the ranked match.</p></div><span class="badge amber">ILLUSTRATIVE DATA</span></div>
+    <div class="section-title"><div><h2>Run door batch matching</h2></div><span class="badge amber">ILLUSTRATIVE DATA</span></div>
     <div class="formgrid"><div class="field"><label for="geometryVin">Body measured at AS43</label><select id="geometryVin">${geometryBodies.map(b=>`<option value="${b.vin}">${b.vin} · AS43 ${signedMm(b.as43)}</option>`).join('')}</select></div><div class="field"><label for="geometryDoorType">Door type / fitment station</label><select id="geometryDoorType"><option value="rear">Rear · FD41 / FD42 · MA41 Station 150</option><option value="front">Front · FA42 / FA41 · MA41 Station 200</option></select></div></div>
     <button type="button" class="btn primary" id="pairBtn" style="margin-top:16px">Match door batch</button>
     <div id="geometryMatch" role="status" aria-live="polite" style="margin-top:16px"></div>
     <details><summary>Compare the measured batches</summary><div class="table-wrap"><table class="table"><thead><tr><th>Batch</th><th>IDZ line</th><th>Door deviation</th><th>Difference to body</th><th>Decision</th></tr></thead><tbody id="geometryBatchRows"></tbody></table></div></details>
   </section>
-  <section class="card pitch-card"><h2>Every body gets its own batch recommendation</h2><p>Illustrative available batches · selection changes with each body’s AS43 result.</p><div class="table-wrap"><table class="table"><thead><tr><th>Body / VIN</th><th>AS43 result</th><th>Rear batch · Station 150</th><th>Front batch · Station 200</th></tr></thead><tbody>${geometryBodies.map(b=>`<tr><td><strong>${b.vin}</strong></td><td>${signedMm(b.as43)}</td><td>${rankGeometryBatches(b,geometryBatches.rear)[0].id} · ${rankGeometryBatches(b,geometryBatches.rear)[0].line}</td><td>${rankGeometryBatches(b,geometryBatches.front)[0].id} · ${rankGeometryBatches(b,geometryBatches.front)[0].line}</td></tr>`).join('')}</tbody></table></div></section>
+  <section class="card pitch-card"><h2>Batch recommendations by body</h2><div class="table-wrap"><table class="table"><thead><tr><th>Body / VIN</th><th>AS43 result</th><th>Rear batch · Station 150</th><th>Front batch · Station 200</th></tr></thead><tbody>${geometryBodies.map(b=>`<tr><td><strong>${b.vin}</strong></td><td>${signedMm(b.as43)}</td><td>${rankGeometryBatches(b,geometryBatches.rear)[0].id} · ${rankGeometryBatches(b,geometryBatches.rear)[0].line}</td><td>${rankGeometryBatches(b,geometryBatches.front)[0].id} · ${rankGeometryBatches(b,geometryBatches.front)[0].line}</td></tr>`).join('')}</tbody></table></div></section>
 `;
 function renderGeometryMatch(){
   const body=geometryBodies.find(b=>b.vin===document.getElementById('geometryVin').value);
   const type=document.getElementById('geometryDoorType').value;
   const batches=geometryBatches[type],ranked=rankGeometryBatches(body,batches),best=ranked[0];
   const station=type==='rear'?'150':'200';
-  document.getElementById('geometryMatch').innerHTML=best?`<div class="riskbox" style="border-color:var(--green)"><div class="label">Recommended batch · human approval required</div><div class="value good">${best.id} · ${best.line}</div><p>${body.vin}: AS43 <b>${signedMm(body.as43)}</b> → door batch <b>${signedMm(best.deviation)}</b> → MA41 Station <b>${station}</b>.</p><p>Closest illustrative geometry difference: <b>${best.difference.toFixed(2)} mm</b>. </p></div>`:'<div class="notice"><b>No released batch available.</b> Hold and request a quality / engineering review.</div>';
+  document.getElementById('geometryMatch').innerHTML=best?`<div class="riskbox" style="border-color:var(--green)"><div class="label">Recommended batch · human approval required</div><div class="value good">${best.id} · ${best.line}</div><p>${body.vin}: AS43 <b>${signedMm(body.as43)}</b> → door batch <b>${signedMm(best.deviation)}</b> → MA41 Station <b>${station}</b>.</p><p>Geometry difference: <b>${best.difference.toFixed(2)} mm</b>. </p></div>`:'<div class="notice"><b>No released batch available.</b> Hold and request a quality / engineering review.</div>';
   document.getElementById('geometryBatchRows').innerHTML=[...ranked,...batches.filter(b=>!b.released)].map(batch=>`<tr><td><strong>${batch.id}</strong></td><td>${batch.line}</td><td>${signedMm(batch.deviation)}</td><td>${batch.released?Math.abs(body.as43-batch.deviation).toFixed(2)+' mm':'Not ranked'}</td><td><span class="badge ${!batch.released?'red':batch.id===best?.id?'green':'amber'}">${!batch.released?'HOLD · OUT OF SPEC':batch.id===best?.id?'RECOMMENDED':'ALTERNATIVE'}</span></td></tr>`).join('');
 }
 document.getElementById('pairBtn').addEventListener('click',renderGeometryMatch);
 ['geometryVin','geometryDoorType'].forEach(id=>document.getElementById(id).addEventListener('change',renderGeometryMatch));
 renderGeometryMatch();
-titles.geometry='Scenario 1 · Door geometry pairing';
-document.querySelector('[data-view="geometry"] span').textContent='1 · Door batch pairing';
+titles.geometry='Geometry Pairing';
+document.querySelector('[data-view="geometry"] span').textContent='Geometry Pairing';
 // Keep the agreed second scenario visible without inventing the clinching case.
 const clinchingView=document.createElement('section');clinchingView.className='view';clinchingView.id='clinching';
-clinchingView.innerHTML='<article class="card pitch-card"><div class="label cyan">SCENARIO 2 · CLINCHING PREDICTIVE ANALYSIS</div><h2>Predictive analysis of clinching.</h2><p>This is the second selected scenario, based on an issue previously experienced at the plant. Its station, failure mode, measured signals and verified outcome will be added when the case details are supplied.</p><span class="badge amber">CASE DETAILS PENDING</span></article>';
+clinchingView.innerHTML='<article class="card pitch-card"><div class="label cyan">SCENARIO 2 · CLINCHING PREDICTIVE ANALYSIS</div><h2>Clinching Analysis</h2><span class="badge amber">CASE DETAILS PENDING</span></article>';
 document.querySelector('.content').appendChild(clinchingView);
-const clinchingNav=document.createElement('button');clinchingNav.dataset.view='clinching';clinchingNav.innerHTML='<i class="dot"></i><span>2 · Clinching analysis</span>';
+const clinchingNav=document.createElement('button');clinchingNav.dataset.view='clinching';clinchingNav.innerHTML='<i class="dot"></i><span>Clinching Analysis</span>';
 document.querySelector('[data-view="geometry"]').insertAdjacentElement('afterend',clinchingNav);
-clinchingNav.addEventListener('click',()=>{document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));clinchingNav.classList.add('active');document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));clinchingView.classList.add('active');document.getElementById('pageTitle').textContent='Scenario 2 · Clinching predictive analysis'});
+clinchingNav.addEventListener('click',()=>{document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));clinchingNav.classList.add('active');document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));clinchingView.classList.add('active');document.getElementById('pageTitle').textContent='Clinching Analysis'});
 // Vehicle history remains available as supporting context, not a third scenario.
 supportingNav.prepend(document.querySelector('[data-view="vehicle"]'));
 document.querySelector('#overview > .notice').innerHTML='<b>MBSA SharkTank AI · two scenarios.</b> Door geometry pairing and clinching predictive analysis, both based on issues previously experienced at the plant. This public demonstration uses illustrative data and has no live production-system connection.';
