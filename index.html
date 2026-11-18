@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>PredictIQ | MBSA Predictive Quality Intelligence</title>
-  <meta name="description" content="MBSA SharkTank AI proof of concept: prevent left-hand door fitment rework with PredictIQ, quantify potential savings and support 390:75:1.">
+  <meta name="description" content="Interactive synthetic proof of concept for plant-wide predictive quality intelligence at MBSA.">
   <style>
     .brand-logo{width:54px;height:54px;flex:0 0 54px;object-fit:cover;border-radius:13px;background:#fff;box-shadow:0 0 28px rgba(79,140,255,.22)}
     :root{--black:#07090c;--panel:#10151b;--panel2:#151c24;--line:#26313c;--silver:#aeb8c2;--white:#f7f9fb;--cyan:#22d3ee;--blue:#4f8cff;--green:#3ddc97;--amber:#ffbd4a;--red:#ff5d68;--muted:#7f8c99;--shadow:0 18px 50px rgba(0,0,0,.28)}
@@ -45,15 +45,13 @@
   .fds-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.controlled-note{margin-top:10px;color:var(--muted);font-size:.68rem;line-height:1.45}
   @media(max-width:900px){.curve-compare,.fds-result-grid{grid-template-columns:1fr}.fds-steps{grid-template-columns:1fr 1fr}}
   @media(max-width:560px){.fds-steps{grid-template-columns:1fr}.fds-head{display:block}.fds-head .badge{margin-top:9px}}
-</style><style>
-.pitch-card{margin-bottom:16px}.pitch-card h2{font-size:1.45rem;margin:10px 0}.pitch-card h3{font-size:1.1rem;margin-top:22px}.pitch-card p{color:var(--silver);font-size:.85rem;line-height:1.6}.pitch-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:18px 0}.pitch-grid>div{padding:12px;border:1px solid var(--line);border-radius:9px}.pitch-grid label{font-size:.8rem;color:var(--silver)}.pitch-grid input{width:100%;margin-top:8px;padding:10px;border:1px solid var(--line);border-radius:8px;background:#080d12;color:white;font:inherit}details.support-detail{margin:16px 0;padding:14px;border:1px solid var(--line);border-radius:12px}summary{cursor:pointer;color:var(--cyan);font-size:.85rem;padding:8px 0}.nav details{border-top:1px solid var(--line);margin-top:10px}.nav details summary{font-size:.75rem}.nav details button{width:100%}#valueResult{font-weight:750;color:var(--green)}@media(max-width:700px){.pitch-grid{grid-template-columns:1fr}.nav details{margin:0;border:0}.nav details summary{padding:10px;white-space:nowrap}.nav details[open]{position:fixed;bottom:64px;left:0;right:0;background:var(--panel);max-height:60vh;overflow:auto}.nav details[open] button{justify-content:flex-start}.nav details[open] button span{display:inline}}
 </style></head>
 <body>
 <div class="app">
   <aside class="side">
     <div class="brand"><img class="brand-logo" src="assets/1e53a4cf-fe05-48dd-aac7-b63d339ad2b7.png" alt="PredictIQ logo"><div><b>PREDICTIQ</b><small>AI intelligence. Quality assured.</small></div></div>
     <nav class="nav" aria-label="Primary navigation">
-      <button class="active" data-view="overview"><i class="dot"></i><span>Concept & value</span></button>
+      <button class="active" data-view="overview"><i class="dot"></i><span>Control Tower</span></button>
       <button data-view="vehicle"><i class="dot"></i><span>Vehicle Genome</span></button>
       <button data-view="geometry"><i class="dot"></i><span>Geometry Pairing</span></button>
       <button data-view="knowledge"><i class="dot"></i><span>Knowledge Hub</span></button>
@@ -65,39 +63,11 @@
     <div class="side-foot"><span class="safe">● Read-only simulation</span><br>All values are synthetic. No production-system connection.</div>
   </aside>
   <main class="main">
-    <header class="top"><div><h1 id="pageTitle">PredictIQ · Concept & value</h1><p>Vehicle EL-C206-18472 · Assembly Mech 4 · 10 Sep 2026 13:42</p></div><div class="actions"><select class="select"><option>Plant: East London</option></select><button class="btn" id="resetBtn">Reset</button><button class="btn primary" id="runBtn">Scenario Run</button></div></header>
+    <header class="top"><div><h1 id="pageTitle">Plant Quality Control Tower</h1><p>Vehicle EL-C206-18472 · Assembly Mech 4 · 10 Sep 2026 13:42</p></div><div class="actions"><select class="select"><option>Plant: East London</option></select><button class="btn" id="resetBtn">Reset</button><button class="btn primary" id="runBtn">Scenario Run</button></div></header>
     <div class="content">
       <section class="view active" id="overview">
-        <div class="notice"><b>Competition proof of concept.</b> MBSA SharkTank AI entry. One focused use case: anticipate left-hand door gap-and-flush mismatch before MA41 installation. All operational data, probabilities and financial figures are illustrative; no live system is connected.</div>
-
-        <article class="card pitch-card">
-          <div class="label cyan">MBSA SHARKTANK AI · FOCUSED PROOF OF CONCEPT</div>
-          <h2>Predict the mismatch. Select the best fit. Prevent rework.</h2>
-          <p>PredictIQ combines AS41 and AS43 body measurements with IDZ left-hand door geometry to recommend a compatible door set before MA41 fitment. An authorised specialist approves the selection; MRS verifies the final gap-and-flush result.</p>
-          <div class="pitch-grid"><div><b>One problem</b><p>A body and door can each meet local limits yet produce a poor combined fit.</p></div><div><b>One decision</b><p>Rank approved IDZ door candidates for the measured body before installation.</p></div><div><b>One measurable outcome</b><p>Compare first-pass fit, adjustment minutes and rework cost with the baseline.</p></div></div>
-          <button class="btn primary" type="button" id="startFocusedDemo">Show the fit recommendation</button>
-          <p class="delta">Pilot scope: one fitment process and one defect family. FDS analysis, maintenance and plant-wide integration are supporting capabilities for later evaluation.</p>
-        </article>
-        <section class="card pitch-card" aria-labelledby="strategyTitle">
-          <div class="section-title"><div><h2 id="strategyTitle">Built around MBSA’s Diamond Strategy</h2><p>Primary alignment: Operational Excellence and Innovation</p></div></div>
-          <div class="pitch-grid"><div><b>Operational Excellence</b><p>Test whether earlier fit selection reduces adjustment work and protects production flow.</p></div><div><b>Innovation</b><p>Use AI-supported evidence and geometry matching to help specialists make a better fitment decision.</p></div><div><b>Diamond Product · Passionate People</b><p>Verify final fit quality and give production, quality and maintenance a shared evidence trail.</p></div></div>
-          <details><summary>Other pillars and pilot evidence</summary><p>Sustainability: measure any reduction in scrapped parts and repeat work before claiming a benefit. License to Operate: retain approved engineering constraints, access controls and traceability. Our Leadership: assign an accountable pilot owner and review results before scaling.</p></details>
-          <h3>390: Volume, 75: Quality, and always 1: Team.</h3>
-          <div class="pitch-grid"><div><b class="cyan">390 — Volume</b><p>Potential contribution: fewer fitment interruptions. Measure adjustment minutes and production time recovered.</p></div><div><b class="good">75 — Quality</b><p>Potential contribution: fewer gap-and-flush defects. Measure first-pass fit and repeat rework.</p></div><div><b class="warn">1 — Team</b><p>One VIN-level evidence package and shared approval and verification across functions.</p></div></div>
-          <p class="delta">390 and 75 retain the supplied MBSA meanings. Their units and KPI formulas are not defined here; pilot measures are supporting indicators, not a claimed change to those KPIs.</p>
-        </section>
-        <section class="card pitch-card" id="pilotValue">
-          <div class="section-title"><div><h2>Quantify the value before scaling</h2><p>Illustrative scenario · ZAR · editable assumptions</p></div><span class="badge amber">NOT ACTUAL SAVINGS</span></div>
-          <p>Six synthetic VIN risks total 3.87 expected defects. At an assumed R45,000 per rework event, modelled exposure is R174,150. Full prevention less R18,000 intervention cost gives an upper-bound R156,150 potential net benefit for this cohort.</p>
-          <div class="pitch-grid">
-            <label>Rework cost per event (R)<input id="valueRework" type="number" min="0" max="100000000" step="100" value="45000"></label>
-            <label>Intervention cost for cohort (R)<input id="valueIntervention" type="number" min="0" max="100000000" step="100" value="18000"></label>
-            <label>Assumed exposure avoided (%)<input id="valueAvoided" type="number" min="0" max="100" step="1" value="100"></label>
-          </div>
-          <p id="valueResult" role="status" aria-live="polite"></p>
-          <details><summary>Calculation and validation</summary><p>Potential net benefit = sum of VIN defect probabilities × rework cost × assumed fraction of exposure avoided − intervention cost. The 100% default is an optimistic ceiling, not a prediction of effectiveness. At 50%, the same assumptions yield R69,075 net benefit. Negative values represent a net cost.</p><p>Before a production trial, agree a comparable baseline and evaluation window with the process owner. Track first-pass fit, rework events, adjustment minutes, false alerts, approved recommendations and verified MRS outcomes. Finance must validate the rework rate, fully loaded costs and intervention costs. Deduct software, integration, training and operating costs in the full business case. Avoid counting the same labour or downtime benefit twice. No annual extrapolation or booked saving is claimed.</p></details>
-        </section>
-        <div class="card sourcehub"><div class="section-title"><div><h2>Control Tower source results</h2><p>Dedicated operational tabs added beneath the original PredictIQ · Concept & value view.</p></div><span class="badge green">4 SIMULATED DATA DOMAINS</span></div><div class="source-tabs"><button type="button" data-source="pg" class="active">Part Geometry</button><button type="button" data-source="gp" class="">Geometry Pairing</button><button type="button" data-source="te" class="">Technical-Equipment Data / Results</button><button type="button" data-source="mrs" class="">All Quality Results from MRS</button></div><div class="source-pane active" id="source-pg"><div class="section-title"><div><h2>Part Geometry</h2><p>Synthetic sample results linked to VIN, part, station, equipment and timestamp.</p></div><span class="pill">READ ONLY</span></div><div class="table-wrap"><table class="table"><thead><tr><th>Time / Vehicle</th><th>VIN / Part / Asset</th><th>Source / Feature</th><th>Result</th><th>Reference / Limit</th><th>Status</th></tr></thead><tbody><tr><td>13:31:08</td><td><b>D184-031</b></td><td>Door outer signature</td><td>+0.18 mm</td><td>±0.30 mm</td><td><span class="badge green">IN SPEC</span></td></tr><tr><td>13:36:54</td><td><b>EL-C206-18472</b></td><td>LF door opening</td><td>+0.42 mm</td><td>±0.50 mm</td><td><span class="badge amber">TREND</span></td></tr></tbody></table></div></div><div class="source-pane " id="source-gp"><div class="section-title"><div><h2>Geometry Pairing</h2><p>Synthetic sample results linked to VIN, part, station, equipment and timestamp.</p></div><span class="pill">READ ONLY</span></div><div class="table-wrap"><table class="table"><thead><tr><th>Time / Vehicle</th><th>VIN / Part / Asset</th><th>Source / Feature</th><th>Result</th><th>Reference / Limit</th><th>Status</th></tr></thead><tbody><tr><td>EL-C206-18472</td><td><b>D184-031</b></td><td>Part Geometry result</td><td>96%</td><td>+0.08 mm</td><td><span class="badge green">BEST APPROVED</span></td></tr><tr><td>EL-C206-18472</td><td>D184-026</td><td>Part Geometry result</td><td>78%</td><td>+0.31 mm</td><td><span class="badge amber">SECONDARY</span></td></tr></tbody></table></div></div><div class="source-pane " id="source-te"><div class="section-title"><div><h2>Technical-Equipment Data / Results</h2><p>Synthetic sample results linked to VIN, part, station, equipment and timestamp.</p></div><span class="pill">READ ONLY</span></div><div class="table-wrap"><table class="table"><thead><tr><th>Time / Vehicle</th><th>VIN / Part / Asset</th><th>Source / Feature</th><th>Result</th><th>Reference / Limit</th><th>Status</th></tr></thead><tbody><tr><td>13:34:22</td><td><b>BS-214 / R07</b></td><td>Joining-current curve</td><td>+8.4% shift</td><td>C206-R12</td><td><span class="badge amber">DRIFT</span></td></tr><tr><td>13:34:24</td><td>BS-214 / R07</td><td>TCP path result</td><td>0.17 mm</td><td>≤0.25 mm</td><td><span class="badge green">NORMAL</span></td></tr></tbody></table></div></div><div class="source-pane " id="source-mrs"><div class="section-title"><div><h2>All Quality Results from MRS</h2><p>Synthetic sample results linked to VIN, part, station, equipment and timestamp.</p></div><span class="pill">READ ONLY</span></div><div class="table-wrap"><table class="table"><thead><tr><th>Time / Vehicle</th><th>VIN / Part / Asset</th><th>Source / Feature</th><th>Result</th><th>Reference / Limit</th><th>Status</th></tr></thead><tbody><tr><td>13:35:02</td><td><b>EL-C206-18472</b></td><td>MRS · Joining</td><td>BS-214</td><td>OK</td><td><span class="badge green">CONTINUE</span></td></tr><tr><td>13:37:41</td><td>EL-C206-18472</td><td>MRS · Geometry</td><td>LF-07 trend</td><td>Trend</td><td><span class="badge amber">GENOME FLAG</span></td></tr><tr><td>13:41:17</td><td>EL-C206-18468</td><td>MRS · Assembly EC</td><td>Door adjustment</td><td>Rework</td><td><span class="badge amber">HISTORICAL MATCH</span></td></tr></tbody></table></div></div><div class="source-flow"><div class="source-node"><b>Part Geometry → Geometry Pairing</b>Measured geometry directly supplies the approved fit recommendation.</div><div class="source-arrow">+</div><div class="source-node"><b>Technical Equipment + MRS</b>Process, equipment and authoritative quality outcomes complete context.</div><div class="source-arrow">→</div><div class="source-node core"><b>Vehicle Genome</b>Complete VIN-level manufacturing memory for SmartQ and Solution Copilot.</div></div></div><div class="grid kpis"><div class="card kpi cyan"><div class="label">Vehicles monitored</div><div class="value">1,248</div><div class="delta">Current synthetic production window</div></div><div class="card kpi good"><div class="label">Processes stable</div><div class="value" id="stableKpi">98.6%</div><div class="delta">Across linked critical operations</div></div><div class="card kpi warn"><div class="label">Emerging deviations</div><div class="value" id="devKpi">2</div><div class="delta">Before conventional NOK condition</div></div><div class="card kpi bad"><div class="label">Vehicles at risk</div><div class="value" id="riskKpi">0</div><div class="delta">Targeted, explainable containment</div></div></div>
+        <div class="notice"><b>Competition proof of concept.</b> This self-contained demonstration simulates authorised MRS, MSB, RDS/PLUS, inline geometry, technical-equipment and maintenance information.</div>
+        <div class="card sourcehub"><div class="section-title"><div><h2>Control Tower source results</h2><p>Dedicated operational tabs added beneath the original Plant Quality Control Tower view.</p></div><span class="badge green">4 CONNECTED DATA DOMAINS</span></div><div class="source-tabs"><button type="button" data-source="pg" class="active">Part Geometry</button><button type="button" data-source="gp" class="">Geometry Pairing</button><button type="button" data-source="te" class="">Technical-Equipment Data / Results</button><button type="button" data-source="mrs" class="">All Quality Results from MRS</button></div><div class="source-pane active" id="source-pg"><div class="section-title"><div><h2>Part Geometry</h2><p>Synthetic sample results linked to VIN, part, station, equipment and timestamp.</p></div><span class="pill">READ ONLY</span></div><div class="table-wrap"><table class="table"><thead><tr><th>Time / Vehicle</th><th>VIN / Part / Asset</th><th>Source / Feature</th><th>Result</th><th>Reference / Limit</th><th>Status</th></tr></thead><tbody><tr><td>13:31:08</td><td><b>D184-031</b></td><td>Door outer signature</td><td>+0.18 mm</td><td>±0.30 mm</td><td><span class="badge green">IN SPEC</span></td></tr><tr><td>13:36:54</td><td><b>EL-C206-18472</b></td><td>LF door opening</td><td>+0.42 mm</td><td>±0.50 mm</td><td><span class="badge amber">TREND</span></td></tr></tbody></table></div></div><div class="source-pane " id="source-gp"><div class="section-title"><div><h2>Geometry Pairing</h2><p>Synthetic sample results linked to VIN, part, station, equipment and timestamp.</p></div><span class="pill">READ ONLY</span></div><div class="table-wrap"><table class="table"><thead><tr><th>Time / Vehicle</th><th>VIN / Part / Asset</th><th>Source / Feature</th><th>Result</th><th>Reference / Limit</th><th>Status</th></tr></thead><tbody><tr><td>EL-C206-18472</td><td><b>D184-031</b></td><td>Part Geometry result</td><td>96%</td><td>+0.08 mm</td><td><span class="badge green">BEST APPROVED</span></td></tr><tr><td>EL-C206-18472</td><td>D184-026</td><td>Part Geometry result</td><td>78%</td><td>+0.31 mm</td><td><span class="badge amber">SECONDARY</span></td></tr></tbody></table></div></div><div class="source-pane " id="source-te"><div class="section-title"><div><h2>Technical-Equipment Data / Results</h2><p>Synthetic sample results linked to VIN, part, station, equipment and timestamp.</p></div><span class="pill">READ ONLY</span></div><div class="table-wrap"><table class="table"><thead><tr><th>Time / Vehicle</th><th>VIN / Part / Asset</th><th>Source / Feature</th><th>Result</th><th>Reference / Limit</th><th>Status</th></tr></thead><tbody><tr><td>13:34:22</td><td><b>BS-214 / R07</b></td><td>Joining-current curve</td><td>+8.4% shift</td><td>C206-R12</td><td><span class="badge amber">DRIFT</span></td></tr><tr><td>13:34:24</td><td>BS-214 / R07</td><td>TCP path result</td><td>0.17 mm</td><td>≤0.25 mm</td><td><span class="badge green">NORMAL</span></td></tr></tbody></table></div></div><div class="source-pane " id="source-mrs"><div class="section-title"><div><h2>All Quality Results from MRS</h2><p>Synthetic sample results linked to VIN, part, station, equipment and timestamp.</p></div><span class="pill">READ ONLY</span></div><div class="table-wrap"><table class="table"><thead><tr><th>Time / Vehicle</th><th>VIN / Part / Asset</th><th>Source / Feature</th><th>Result</th><th>Reference / Limit</th><th>Status</th></tr></thead><tbody><tr><td>13:35:02</td><td><b>EL-C206-18472</b></td><td>MRS · Joining</td><td>BS-214</td><td>OK</td><td><span class="badge green">CONTINUE</span></td></tr><tr><td>13:37:41</td><td>EL-C206-18472</td><td>MRS · Geometry</td><td>LF-07 trend</td><td>Trend</td><td><span class="badge amber">GENOME FLAG</span></td></tr><tr><td>13:41:17</td><td>EL-C206-18468</td><td>MRS · Assembly EC</td><td>Door adjustment</td><td>Rework</td><td><span class="badge amber">HISTORICAL MATCH</span></td></tr></tbody></table></div></div><div class="source-flow"><div class="source-node"><b>Part Geometry → Geometry Pairing</b>Measured geometry directly supplies the approved fit recommendation.</div><div class="source-arrow">+</div><div class="source-node"><b>Technical Equipment + MRS</b>Process, equipment and authoritative quality outcomes complete context.</div><div class="source-arrow">→</div><div class="source-node core"><b>Vehicle Genome</b>Complete VIN-level manufacturing memory for SmartQ and Solution Copilot.</div></div></div><div class="grid kpis"><div class="card kpi cyan"><div class="label">Vehicles monitored</div><div class="value">1,248</div><div class="delta">Current synthetic production window</div></div><div class="card kpi good"><div class="label">Processes stable</div><div class="value" id="stableKpi">98.6%</div><div class="delta">Across linked critical operations</div></div><div class="card kpi warn"><div class="label">Emerging deviations</div><div class="value" id="devKpi">2</div><div class="delta">Before conventional NOK condition</div></div><div class="card kpi bad"><div class="label">Vehicles at risk</div><div class="value" id="riskKpi">0</div><div class="delta">Targeted, explainable containment</div></div></div>
         <div class="grid layout">
           <div class="notice scenario-note"><b>Original Scenario Simulation.</b> Use Scenario Run in the header to trigger the existing cross-shop propagation, affected-VIN, recommendation and financial simulation.</div><div class="card"><div class="section-title"><div><h2>Cross-shop propagation</h2><p>How one weak signal can become a downstream quality defect</p></div><span class="pill" id="scenarioState">Monitoring</span></div><div class="plant"><div class="shop" id="s1"><b>Incoming Parts</b><span>Supplier batch D184<br>geometry +0.18 mm</span></div><div class="shop" id="s2"><b>Body Shop</b><span>Joining signature<br>within local limit</span></div><div class="shop" id="s3"><b>Inline Geometry</b><span>Opening trend<br>moving positive</span></div><div class="shop" id="s4"><b>Assembly</b><span>Door fitment<br>predicted mismatch</span></div><div class="shop" id="s5"><b>MRS Outcome</b><span>Potential gap / flush<br>defect prevented</span></div></div><div class="section-title"><div><h2>Evidence timeline</h2><p>VIN, part, process, asset and quality events aligned in time</p></div></div><div class="trace"><div class="event"><time>13:31:08</time><i></i><div><strong>MSB · incoming component</strong><p>Batch D184 accepted; dimensional signature remains inside supplier specification.</p></div></div><div class="event"><time>13:34:22</time><i></i><div><strong>Technical process · Station BS-214</strong><p>Joining-current interaction shifts relative to this variant and material combination.</p></div></div><div class="event hidden ai-event"><time>13:37:41</time><i class="warn"></i><div><strong>Inline geometry · predictive signal</strong><p>Door-opening feature trend combines with part geometry to increase fitment risk.</p></div></div><div class="event hidden ai-event"><time>13:42:03</time><i class="bad"></i><div><strong>Quality Genome AI · interception</strong><p>Six related VINs identified. Best correction point remains available before fitment.</p></div></div></div></div>
           <aside class="card"><div class="section-title"><div><h2>AI risk prediction</h2><p>Combined evidence, not a single threshold</p></div><span class="badge green" id="riskBadge">LOW</span></div><div class="riskbox"><div class="riskhead"><div><div class="label">Door fitment defect</div><div class="score" id="riskScore">18%</div></div><div class="label" id="window">No action</div></div><div class="bar"><span id="riskBar"></span></div><div class="why"><div><span>Incoming-part geometry</span><b id="w1">+6%</b></div><div><span>Body opening trend</span><b id="w2">+5%</b></div><div><span>Joining interaction</span><b id="w3">+4%</b></div><div><span>Historical similarity</span><b id="w4">+3%</b></div></div><div class="recommend"><h3>Recommended response</h3><p id="recommendation">Continue normal process monitoring. No consequential action recommended.</p></div></div><button class="btn primary" style="width:100%;margin-top:14px" id="inspectBtn" disabled>Open affected VINs</button></aside>
@@ -128,7 +98,7 @@
 <div class="toast" id="toast" role="status"></div>
 <script>
   const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-  const titles={overview:'PredictIQ · Concept & value',vehicle:'Vehicle Quality Genome',geometry:'Geometry-Compatible Part Pairing',smartq:'SmartQ AI Intelligence',knowledge:'SmartQ Knowledge Hub',solutions:'Root-Cause & Solution Copilot',maintenance:'Quality-Driven Maintenance',integration:'Data & Automation Architecture'};
+  const titles={overview:'Plant Quality Control Tower',vehicle:'Vehicle Quality Genome',geometry:'Geometry-Compatible Part Pairing',smartq:'SmartQ AI Intelligence',knowledge:'SmartQ Knowledge Hub',solutions:'Root-Cause & Solution Copilot',maintenance:'Quality-Driven Maintenance',integration:'Data & Automation Architecture'};
   $$('.nav button').forEach(b=>b.addEventListener('click',()=>{ $$('.nav button').forEach(x=>x.classList.remove('active')); b.classList.add('active'); $$('.view').forEach(v=>v.classList.remove('active')); $('#'+b.dataset.view).classList.add('active'); $('#pageTitle').textContent=titles[b.dataset.view]; }));
   const toast=msg=>{const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)};
   const vehicleProcessChart=$('#chart');
@@ -219,14 +189,14 @@
     savings.id='savingsSection';
     savings.className='card savings-section';
     savings.innerHTML=`
-      <div class="section-title"><div><h2>Cost avoidance & value</h2><p>Illustrative upper-bound cost avoidance; not measured MBSA savings</p></div><span class="badge amber" id="savingsStatus">AWAITING MITIGATION</span></div>
+      <div class="section-title"><div><h2>Cost avoidance & value</h2><p>Financial value is recognised only after the mitigation outcome is verified</p></div><span class="badge amber" id="savingsStatus">AWAITING MITIGATION</span></div>
       <div class="savings-grid">
-        <div class="saving-metric"><div class="label">Vehicles in scope</div><div class="amount">6</div><div class="delta">Six synthetic VINs</div></div>
-        <div class="saving-metric"><div class="label">Expected defect exposure</div><div class="amount">R174,150</div><div class="delta">Probability-weighted rework risk</div></div>
+        <div class="saving-metric"><div class="label">Vehicles protected</div><div class="amount">6</div><div class="delta">Fingerprint-matched VINs</div></div>
+        <div class="saving-metric"><div class="label">Expected defect exposure</div><div class="amount">R226,800</div><div class="delta">Probability-weighted rework risk</div></div>
         <div class="saving-metric"><div class="label">Mitigation cost</div><div class="amount">R18,000</div><div class="delta">Inspection, containment and correction</div></div>
-        <div class="saving-metric net"><div class="label">Potential net cost avoidance</div><div class="amount good" id="netSaving">R156,150</div><div class="delta" id="savingRecognition">Assumes all modelled rework exposure is avoided</div></div>
+        <div class="saving-metric net"><div class="label">Net expected saving</div><div class="amount good" id="netSaving">R208,800</div><div class="delta" id="savingRecognition">Pending successful verification</div></div>
       </div>
-      <div class="saving-method"><p><strong>Calculation:</strong> Sum of six synthetic VIN risks (84%, 68%, 64%, 61%, 57%, 53%) = 3.87 expected defects × R45,000 assumed rework cost = R174,150 exposure. Less R18,000 mitigation cost. Downtime, scrap, warranty and customer-impact savings are excluded until validated.</p><button class="btn primary" id="confirmMitigation" disabled>Simulate verification</button></div>`;
+      <div class="saving-method"><p><strong>Calculation:</strong> 6 vehicles × 84% predicted defect probability × R45,000 estimated rework cost = R226,800 exposure. Less R18,000 mitigation cost. Downtime, scrap, warranty and customer-impact savings are excluded until validated.</p><button class="btn primary" id="confirmMitigation" disabled>Confirm successful mitigation</button></div>`;
     overviewLayout.insertAdjacentElement('afterend',savings);
     document.getElementById('runBtn')?.addEventListener('click',()=>setTimeout(()=>{
       savings.classList.add('ready');
@@ -234,10 +204,10 @@
     },1300));
     document.getElementById('confirmMitigation').addEventListener('click',event=>{
       const status=document.getElementById('savingsStatus');
-      status.textContent='SIMULATED VERIFICATION';status.className='badge green';
-      document.getElementById('savingRecognition').textContent='Simulation complete · estimate remains unvalidated';
-      event.currentTarget.textContent='Verification simulated';event.currentTarget.disabled=true;
-      toast('Verification simulated — illustrative estimate, no booked saving');
+      status.textContent='MITIGATION VERIFIED';status.className='badge green';
+      document.getElementById('savingRecognition').textContent='Expected saving recognised';
+      event.currentTarget.textContent='Successfully mitigated';event.currentTarget.disabled=true;
+      toast('Risk mitigated — R208,800 expected net saving recorded');
     });
   }
   const solutionLayout=document.querySelector('#solutions .layout');
@@ -421,155 +391,5 @@
   const fdsPrompt=document.createElement('button');fdsPrompt.type='button';fdsPrompt.dataset.question='Why did the FDS curve fail?';fdsPrompt.textContent='FDS curve failure';document.querySelector('.chat-prompts')?.appendChild(fdsPrompt);
   fdsPrompt.addEventListener('click',()=>{addChat('user',fdsPrompt.dataset.question);setTimeout(()=>addChat('ai',answerSmartQ(fdsPrompt.dataset.question)),220)});
 </script>
-<script>document.querySelectorAll('.source-tabs button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.source-tabs button').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.source-pane').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById('source-'+b.dataset.source).classList.add('active')}));</script><script>
-// Keep the competition story concise while retaining the existing technical demo.
-const supportingNav=document.createElement('details');
-supportingNav.innerHTML='<summary>Supporting capabilities</summary>';
-document.querySelector('.nav').appendChild(supportingNav);
-['knowledge','smartq','solutions','maintenance','integration'].forEach(id=>supportingNav.appendChild(document.querySelector('.nav [data-view="'+id+'"]')));
-const technicalDetail=document.createElement('details');
-technicalDetail.className='support-detail';
-technicalDetail.innerHTML='<summary>Explore the simulated evidence and risk scenario</summary>';
-document.getElementById('overview').appendChild(technicalDetail);
-Array.from(document.getElementById('overview').children).filter(el=>!el.classList.contains('pitch-card')&&el!==technicalDetail&&!el.classList.contains('notice')).forEach(el=>technicalDetail.appendChild(el));
-document.querySelector('#overview .scenario-note').innerHTML='<b>Supporting risk simulation.</b> Run the scenario to inspect the six synthetic VINs. These probabilities are illustrative and are not calibrated production-model results.';
-document.getElementById('runBtn').addEventListener('click',()=>{technicalDetail.open=true});
-document.getElementById('startFocusedDemo').addEventListener('click',()=>{document.querySelector('[data-view="geometry"]').click();document.getElementById('pairBtn').click();window.scrollTo({top:0,behavior:'smooth'})});
-function updatePilotValue(){
-  const fields=['valueRework','valueIntervention','valueAvoided'].map(id=>document.getElementById(id));
-  const out=document.getElementById('valueResult');
-  if(fields.some(el=>el.value.trim()===''||!el.checkValidity())){out.textContent='Enter valid non-negative costs and an avoided-exposure percentage from 0 to 100.';return}
-  const [rework,intervention,avoided]=fields.map(el=>Number(el.value));
-  const exposure=3.87*rework,net=exposure*avoided/100-intervention;
-  const money=n=>new Intl.NumberFormat('en-ZA',{style:'currency',currency:'ZAR',maximumFractionDigits:0}).format(n);
-  out.textContent='Modelled exposure: '+money(exposure)+' · Potential net '+(net<0?'cost: ':'benefit: ')+money(Math.abs(net))+' for this cohort ('+avoided+'% exposure avoided).';
-}
-['valueRework','valueIntervention','valueAvoided'].forEach(id=>document.getElementById(id).addEventListener('input',updatePilotValue));
-updatePilotValue();
-document.getElementById('recommendation').textContent='Continue monitoring the simulated AS41/AS43 body measurements and IDZ door geometry.';
-document.getElementById('runBtn').addEventListener('click',()=>setTimeout(()=>{document.getElementById('recommendation').textContent='Review the six synthetic VINs, validate AS41/AS43 measurements, rank approved IDZ left-hand door sets and verify the selected fit at MA41 through MRS.'},1250));
-</script><script>
-// Scenario 1: batch geometry matching. All numbers below are illustrative.
-const geometryBodies = [
-  {vin:'EL-C206-18472', as41:0.35, as43:0.42},
-  {vin:'EL-C206-18481', as41:-0.08, as43:-0.12},
-  {vin:'EL-C206-18486', as41:0.06, as43:0.09}
-];
-const geometryBatches = {
-  rear:[{id:'R-A',line:'FD41',deviation:0.38,released:true},{id:'R-B',line:'FD42',deviation:-0.10,released:true},{id:'R-C',line:'FD41',deviation:0.10,released:true},{id:'R-HOLD',line:'FD42',deviation:0.80,released:false}],
-  front:[{id:'F-A',line:'FA42',deviation:0.39,released:true},{id:'F-B',line:'FA41',deviation:-0.09,released:true},{id:'F-C',line:'FA42',deviation:0.08,released:true},{id:'F-HOLD',line:'FA41',deviation:0.80,released:false}]
-};
-function rankGeometryBatches(body,batches){
-  return batches.filter(batch=>batch.released).map(batch=>({...batch,difference:Math.abs(body.as43-batch.deviation)})).sort((a,b)=>a.difference-b.difference||a.id.localeCompare(b.id));
-}
-const signedMm=n=>(n>=0?'+':'')+n.toFixed(2)+' mm';
-const geometryView=document.getElementById('geometry');
-geometryView.innerHTML=`
-  <section class="card pitch-card">
-    <div class="section-title"><div><h2>Run door batch matching</h2></div><span class="badge amber">ILLUSTRATIVE DATA</span></div>
-    <div class="formgrid"><div class="field"><label for="geometryVin">Body measured at AS43</label><select id="geometryVin">${geometryBodies.map(b=>`<option value="${b.vin}">${b.vin} · AS43 ${signedMm(b.as43)}</option>`).join('')}</select></div><div class="field"><label for="geometryDoorType">Door type / fitment station</label><select id="geometryDoorType"><option value="rear">Rear · FD41 / FD42 · MA41 Station 150</option><option value="front">Front · FA42 / FA41 · MA41 Station 200</option></select></div></div>
-    <button type="button" class="btn primary" id="pairBtn" style="margin-top:16px">Match door batch</button>
-    <div id="geometryMatch" role="status" aria-live="polite" style="margin-top:16px"></div>
-    <details><summary>Compare the measured batches</summary><div class="table-wrap"><table class="table"><thead><tr><th>Batch</th><th>IDZ line</th><th>Door deviation</th><th>Difference to body</th><th>Decision</th></tr></thead><tbody id="geometryBatchRows"></tbody></table></div></details>
-  </section>
-  <section class="card pitch-card"><h2>Batch recommendations by body</h2><div class="table-wrap"><table class="table"><thead><tr><th>Body / VIN</th><th>AS43 result</th><th>Rear batch · Station 150</th><th>Front batch · Station 200</th></tr></thead><tbody>${geometryBodies.map(b=>`<tr><td><strong>${b.vin}</strong></td><td>${signedMm(b.as43)}</td><td>${rankGeometryBatches(b,geometryBatches.rear)[0].id} · ${rankGeometryBatches(b,geometryBatches.rear)[0].line}</td><td>${rankGeometryBatches(b,geometryBatches.front)[0].id} · ${rankGeometryBatches(b,geometryBatches.front)[0].line}</td></tr>`).join('')}</tbody></table></div></section>
-`;
-function renderGeometryMatch(){
-  const body=geometryBodies.find(b=>b.vin===document.getElementById('geometryVin').value);
-  const type=document.getElementById('geometryDoorType').value;
-  const batches=geometryBatches[type],ranked=rankGeometryBatches(body,batches),best=ranked[0];
-  const station=type==='rear'?'150':'200';
-  document.getElementById('geometryMatch').innerHTML=best?`<div class="riskbox" style="border-color:var(--green)"><div class="label">Recommended batch · human approval required</div><div class="value good">${best.id} · ${best.line}</div><p>${body.vin}: AS43 <b>${signedMm(body.as43)}</b> → door batch <b>${signedMm(best.deviation)}</b> → MA41 Station <b>${station}</b>.</p><p>Geometry difference: <b>${best.difference.toFixed(2)} mm</b>. </p></div>`:'<div class="notice"><b>No released batch available.</b> Hold and request a quality / engineering review.</div>';
-  document.getElementById('geometryBatchRows').innerHTML=[...ranked,...batches.filter(b=>!b.released)].map(batch=>`<tr><td><strong>${batch.id}</strong></td><td>${batch.line}</td><td>${signedMm(batch.deviation)}</td><td>${batch.released?Math.abs(body.as43-batch.deviation).toFixed(2)+' mm':'Not ranked'}</td><td><span class="badge ${!batch.released?'red':batch.id===best?.id?'green':'amber'}">${!batch.released?'HOLD · OUT OF SPEC':batch.id===best?.id?'RECOMMENDED':'ALTERNATIVE'}</span></td></tr>`).join('');
-}
-document.getElementById('pairBtn').addEventListener('click',renderGeometryMatch);
-['geometryVin','geometryDoorType'].forEach(id=>document.getElementById(id).addEventListener('change',renderGeometryMatch));
-renderGeometryMatch();
-titles.geometry='Geometry Pairing';
-document.querySelector('[data-view="geometry"] span').textContent='Geometry Pairing';
-// Keep the agreed second scenario visible without inventing the clinching case.
-const clinchingView=document.createElement('section');clinchingView.className='view';clinchingView.id='clinching';
-clinchingView.innerHTML=`
-<section class="card pitch-card">
-<div class="section-title"><h2>Fender clinching · Broken die O-ring</h2><span class="badge amber">SIMULATED REPLAY</span></div>
-<div class="pitch-grid"><div><b>304+ units affected</b><p>Reported incident · loose fender clinch points</p></div><div><b>Controller OK</b><p>Reference re-taught with the broken O-ring</p></div><div><b>SmartQ baseline</b><p>Last validated curve for the same profile · MSB via MQTT</p></div></div>
-<button type="button" class="btn primary" id="clinchRun">Replay 10 units</button>
-<button type="button" class="btn" id="clinchNext">Next unit</button>
-<button type="button" class="btn" id="clinchReset">Reset</button>
-<p id="clinchProgress"></p><div id="clinchStatus" role="status" class="notice"></div>
-<div class="table-wrap"><table class="table"><thead><tr><th>Curve feature</th><th>Validated reference</th><th>Re-taught reference</th><th>Current unit</th><th>Change vs validated</th></tr></thead><tbody id="clinchCurve"></tbody></table></div>
-<p class="delta">Illustrative measurements and thresholds. Warning after 10 consecutive units outside a demo limit.</p>
-</section>
-<section class="card pitch-card"><h2>Containment opportunity</h2><div class="pitch-grid"><div><b>304 units</b><p>Conservative illustration based on the reported incident</p></div><div><b>10 units</b><p>Hold and inspect at the warning</p></div><div><b>294 potentially avoided</b><p>If production stops at the warning and resumes after repair and joint verification.</p></div></div></section>`;
-const clinchFeatures=[
-  {name:'Early forming force',good:9,taught:9,limit:2,unit:'kN'},
-  {name:'Deep drawing force',good:19,taught:12,limit:4,unit:'kN'},
-  {name:'Compression force',good:29,taught:23,limit:4,unit:'kN'},
-  {name:'Final force',good:34,taught:29,limit:3,unit:'kN'},
-  {name:'Final displacement',good:5.08,taught:5.42,limit:0.2,unit:'mm'}
-];
-const clinchEl=id=>clinchingView.querySelector('#'+id);
-let clinchUnit=0,clinchStreak=0,clinchTimer=null;
-function renderClinchReplay(values=[]){
-  clinchEl('clinchCurve').innerHTML=clinchFeatures.map((f,i)=>{
-    const fmt=value=>value.toFixed(f.unit==='mm'?2:1)+' '+f.unit;
-    const change=values[i]-f.good;
-    const current=Number.isFinite(change);
-    return '<tr><td>'+f.name+'</td><td>'+fmt(f.good)+'</td><td>'+fmt(f.taught)+'</td><td>'+(current?fmt(values[i]):'—')+'</td><td class="'+(Math.abs(change)>f.limit?'warn':'')+'">'+(current?(change>0?'+':'')+fmt(change):'—')+'</td></tr>';
-  }).join('');
-  clinchEl('clinchProgress').textContent='Units replayed '+clinchUnit+'/10 · Consecutive deviations '+clinchStreak+'/10';
-  clinchEl('clinchStatus').textContent=clinchUnit===0?'Ready to replay':clinchStreak===10?'SMARTQ WARNING · Controller OK · Stop and inspect the die and joints. Hold the 10 suspect units.':'Controller OK · SmartQ tracking deviation';
-  clinchEl('clinchStatus').className=clinchStreak===10?'notice warn':'notice';
-  clinchEl('clinchRun').disabled=clinchTimer!==null||clinchUnit===10;
-  clinchEl('clinchNext').disabled=clinchEl('clinchRun').disabled;
-}
-function stepClinchReplay(){
-  if(clinchUnit>=10)return;
-  clinchUnit++;
-  const variation=(clinchUnit%3-1)*0.2;
-  const values=clinchFeatures.map(f=>f.taught+variation*(f.unit==='mm'?0.1:1));
-  clinchStreak=clinchFeatures.some((f,i)=>Math.abs(values[i]-f.good)>f.limit)?clinchStreak+1:0;
-  if(clinchUnit===10){clearInterval(clinchTimer);clinchTimer=null;}
-  renderClinchReplay(values);
-}
-clinchEl('clinchRun').addEventListener('click',()=>{
-  clinchTimer=setInterval(stepClinchReplay,420);
-  stepClinchReplay();
-});
-clinchEl('clinchNext').addEventListener('click',stepClinchReplay);
-clinchEl('clinchReset').addEventListener('click',()=>{
-  clearInterval(clinchTimer);clinchTimer=null;
-  clinchUnit=0;clinchStreak=0;
-  renderClinchReplay();
-});
-renderClinchReplay();
-document.querySelector('.content').appendChild(clinchingView);
-const clinchingNav=document.createElement('button');clinchingNav.dataset.view='clinching';clinchingNav.innerHTML='<i class="dot"></i><span>Clinching Analysis</span>';
-document.querySelector('[data-view="geometry"]').insertAdjacentElement('afterend',clinchingNav);
-clinchingNav.addEventListener('click',()=>{document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));clinchingNav.classList.add('active');document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));clinchingView.classList.add('active');document.getElementById('pageTitle').textContent='Clinching Analysis'});
-// Vehicle history remains available as supporting context, not a third scenario.
-supportingNav.prepend(document.querySelector('[data-view="vehicle"]'));
-document.querySelector('#overview > .notice').innerHTML='<b>MBSA SharkTank AI · two scenarios.</b> Door geometry pairing and clinching predictive analysis, both based on issues previously experienced at the plant. This public demonstration uses illustrative data and has no live production-system connection.';
-const pitch=document.querySelector('#overview .pitch-card');
-pitch.querySelector('h2').textContent='Use measurement evidence to prevent the next production issue.';
-pitch.querySelector('h2 + p').textContent='Two focused scenarios: match each measured body to a compatible IDZ door batch before VMT Bestfit installation, and use clinching data for predictive analysis. Scenario 1 is ready to explore; the clinching case awaits its specific evidence.';
-pitch.querySelector('.pitch-grid').innerHTML='<div><b>1 · Door geometry pairing</b><p>AS43 body results matched to measured IDZ door batches for MA41 Stations 150 and 200.</p></div><div><b>2 · Clinching prediction</b><p>A second experienced issue, with the station, signals and failure details still to be supplied.</p></div><div><b>Measured business value</b><p>Verify fewer regulation stops, less downtime and improved first-pass quality.</p></div>';
-pitch.querySelector('.delta').textContent='Two scenario scope. Broader platform capabilities remain in supporting detail.';
-document.getElementById('startFocusedDemo').textContent='Explore door batch pairing';
-const oldExample=document.getElementById('pilotValue');
-const valueDetails=document.createElement('details');valueDetails.className='support-detail';valueDetails.innerHTML='<summary>Earlier illustrative rework-cost model · supporting assumptions</summary>';
-oldExample.parentNode.insertBefore(valueDetails,oldExample);valueDetails.appendChild(oldExample);
-document.querySelector('.top p').textContent='PredictIQ model demo · Illustrative data';
-document.querySelector('[data-view="overview"] span').textContent='Strategy & value';
-titles.overview='Strategy & value';
-pitch.remove();
-document.querySelector('#overview > .notice').remove();
-document.getElementById('runBtn').hidden=true;
-const legacyRun=document.getElementById('runBtn');
-technicalDetail.appendChild(legacyRun);
-legacyRun.hidden=false;
-legacyRun.textContent='Run supporting simulation';
-document.querySelector('[data-view="geometry"]').click();
-
-</script></body>
+<script>document.querySelectorAll('.source-tabs button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.source-tabs button').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.source-pane').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById('source-'+b.dataset.source).classList.add('active')}));</script></body>
 </html>
