@@ -400,5 +400,132 @@ body:not(:has(#overview.active)) #runBtn{display:none}
   const fdsPrompt=document.createElement('button');fdsPrompt.type='button';fdsPrompt.dataset.question='Why did the FDS curve fail?';fdsPrompt.textContent='FDS curve failure';document.querySelector('.chat-prompts')?.appendChild(fdsPrompt);
   fdsPrompt.addEventListener('click',()=>{addChat('user',fdsPrompt.dataset.question);setTimeout(()=>addChat('ai',answerSmartQ(fdsPrompt.dataset.question)),220)});
 </script>
-<script>document.querySelectorAll('.source-tabs button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.source-tabs button').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.source-pane').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById('source-'+b.dataset.source).classList.add('active')}));</script></body>
+<script>document.querySelectorAll('.source-tabs button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.source-tabs button').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.source-pane').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById('source-'+b.dataset.source).classList.add('active')}));</script><script>
+const clinchingView=document.createElement('section');
+clinchingView.id='smartqClinching';
+clinchingView.innerHTML=`
+<section class="card pitch-card">
+<div class="section-title"><h2>Fender clinching · Broken die O-ring</h2><span class="badge amber">SIMULATED REPLAY</span></div>
+<div class="pitch-grid"><div><b>304+ units affected</b><p>Reported incident · loose fender clinch points</p></div><div><b>Controller OK</b><p>Reference re-taught with the broken O-ring</p></div><div><b>SmartQ baseline</b><p>Last validated curve for the same profile · MSB via MQTT</p></div></div>
+<button type="button" class="btn primary" id="clinchRun">Replay 10 units</button>
+<button type="button" class="btn" id="clinchNext">Next unit</button>
+<button type="button" class="btn" id="clinchReset">Reset</button>
+<p id="clinchProgress"></p><div id="clinchStatus" role="status" class="notice"></div>
+<div class="table-wrap"><table class="table"><thead><tr><th>Curve feature</th><th>Validated reference</th><th>Re-taught reference</th><th>Current unit</th><th>Change vs validated</th></tr></thead><tbody id="clinchCurve"></tbody></table></div>
+<p class="delta">Illustrative measurements and thresholds. Warning after 10 consecutive units outside a demo limit.</p>
+</section>
+<section class="card pitch-card"><h2>Containment opportunity</h2><div class="pitch-grid"><div><b>304 units</b><p>Conservative illustration based on the reported incident</p></div><div><b>10 units</b><p>Hold and inspect at the warning</p></div><div><b>294 potentially avoided</b><p>If production stops at the warning and resumes after repair and joint verification.</p></div></div></section>`;
+const clinchFeatures=[
+  {name:'Early forming force',good:9,taught:9,limit:2,unit:'kN'},
+  {name:'Deep drawing force',good:19,taught:12,limit:4,unit:'kN'},
+  {name:'Compression force',good:29,taught:23,limit:4,unit:'kN'},
+  {name:'Final force',good:34,taught:29,limit:3,unit:'kN'},
+  {name:'Final displacement',good:5.08,taught:5.42,limit:0.2,unit:'mm'}
+];
+const clinchEl=id=>clinchingView.querySelector('#'+id);
+let clinchUnit=0,clinchStreak=0,clinchTimer=null;
+function renderClinchReplay(values=[]){
+  clinchEl('clinchCurve').innerHTML=clinchFeatures.map((f,i)=>{
+    const fmt=value=>value.toFixed(f.unit==='mm'?2:1)+' '+f.unit;
+    const change=values[i]-f.good;
+    const current=Number.isFinite(change);
+    return '<tr><td>'+f.name+'</td><td>'+fmt(f.good)+'</td><td>'+fmt(f.taught)+'</td><td>'+(current?fmt(values[i]):'—')+'</td><td class="'+(Math.abs(change)>f.limit?'warn':'')+'">'+(current?(change>0?'+':'')+fmt(change):'—')+'</td></tr>';
+  }).join('');
+  clinchEl('clinchProgress').textContent='Units replayed '+clinchUnit+'/10 · Consecutive deviations '+clinchStreak+'/10';
+  clinchEl('clinchStatus').textContent=clinchUnit===0?'Ready to replay':clinchStreak===10?'SMARTQ WARNING · Controller OK · Stop and inspect the die and joints. Hold the 10 suspect units.':'Controller OK · SmartQ tracking deviation';
+  clinchEl('clinchStatus').className=clinchStreak===10?'notice warn':'notice';
+  clinchEl('clinchRun').disabled=clinchTimer!==null||clinchUnit===10;
+  clinchEl('clinchNext').disabled=clinchEl('clinchRun').disabled;
+}
+function stepClinchReplay(){
+  if(clinchUnit>=10)return;
+  clinchUnit++;
+  const variation=(clinchUnit%3-1)*0.2;
+  const values=clinchFeatures.map(f=>f.taught+variation*(f.unit==='mm'?0.1:1));
+  clinchStreak=clinchFeatures.some((f,i)=>Math.abs(values[i]-f.good)>f.limit)?clinchStreak+1:0;
+  if(clinchUnit===10){clearInterval(clinchTimer);clinchTimer=null;}
+  renderClinchReplay(values);
+}
+clinchEl('clinchRun').addEventListener('click',()=>{
+  clinchTimer=setInterval(stepClinchReplay,420);
+  stepClinchReplay();
+});
+clinchEl('clinchNext').addEventListener('click',stepClinchReplay);
+clinchEl('clinchReset').addEventListener('click',()=>{
+  clearInterval(clinchTimer);clinchTimer=null;
+  clinchUnit=0;clinchStreak=0;
+  renderClinchReplay();
+});
+renderClinchReplay();
+
+document.getElementById('smartq').prepend(clinchingView);
+const clinchCase=document.createElement('section');
+clinchCase.className='card pitch-card';
+clinchCase.hidden=true;
+document.getElementById('solutions').prepend(clinchCase);
+const openClinchCase=document.createElement('button');
+openClinchCase.type='button';
+openClinchCase.className='btn primary';
+openClinchCase.textContent='Open in Solution Copilot';
+openClinchCase.disabled=true;
+clinchEl('clinchStatus').after(openClinchCase);
+const containment=clinchingView.lastElementChild;
+containment.hidden=true;
+const priorRenderClinch=renderClinchReplay;
+renderClinchReplay=function(values){
+  priorRenderClinch(values);
+  const warning=clinchStreak===10;
+  openClinchCase.disabled=!warning;
+  containment.hidden=!warning;
+  if(!warning)clinchCase.hidden=true;
+};
+openClinchCase.addEventListener('click',()=>{
+  if(clinchStreak!==10)return;
+  clinchCase.innerHTML='<h2>Fender clinching · SmartQ warning at unit 10</h2><p>Controller OK against the re-taught reference. SmartQ detected persistent deviations from the validated reference for the same profile.</p><p><b>Evidence</b> · '+clinchEl('clinchCurve').querySelectorAll('tr')[1].lastElementChild.textContent+' deep drawing force, '+clinchEl('clinchCurve').querySelectorAll('tr')[3].lastElementChild.textContent+' final force, '+clinchEl('clinchCurve').querySelectorAll('tr')[4].lastElementChild.textContent+' final displacement versus validated reference.</p><p><b>Proposed response</b> · Request a stop and hold the 10 suspect units. Inspect the die O-ring and fender clinch points, then verify joint quality before restart.</p><p><b>294 potentially avoided</b> · Simulated comparison against 304 units, assuming an immediate stop at the warning.</p>';
+  clinchCase.hidden=false;
+  document.querySelector('[data-view="solutions"]').click();
+  clinchCase.scrollIntoView({block:'start'});
+});
+const pairButton=document.getElementById('pairBtn');
+const pairingBody=document.getElementById('bodySelect');
+const pairingResult=document.getElementById('pairResult');
+pairingResult.setAttribute('role','status');
+const pairingCards=Array.from(document.querySelectorAll('#geometry .part'));
+const pairingType=document.createElement('select');
+pairingType.id='pairingDoorType';
+pairingType.innerHTML='<option value="front">Front · FA41 / FA42 · Station 200</option><option value="rear">Rear · FD41 / FD42 · Station 150</option>';
+const existingField=document.querySelector('#geometry .formgrid .field:last-child');
+existingField.innerHTML='<label for="pairingDoorType">IDZ door line / MA41 station</label>';
+existingField.append(pairingType);
+document.querySelector('#geometry .formgrid .field label').htmlFor='bodySelect';
+function refreshPairing(showResult){
+  const rear=pairingType.value==='rear';
+  const second=pairingBody.value==='b';
+  const scores=second?[88,95,69]:[96,78,41];
+  const values=second?['+0.18','+0.06','+0.42']:['+0.08','+0.31','+0.58'];
+  const best=second?1:0;
+  pairingCards.forEach((card,i)=>{
+    const line=rear?(i===1?'FD42':'FD41'):(i===1?'FA42':'FA41');
+    card.querySelector('h3').textContent='IDZ '+line+' · Door Set '+['031','026','119'][i];
+    const fit=card.querySelector('.fit');
+    fit.textContent=i===2?'Hold':scores[i]+'%';
+    fit.className='fit '+(i===2?'bad':i===best?'good':'warn');
+    const notes=card.querySelectorAll('li');
+    notes[0].textContent='Predicted gap/flush '+values[i]+' mm';
+    notes[1].textContent=i===2?'Excluded from pairing':i===best?'Best eligible match':'Eligible alternative';
+    notes[2].textContent=i===2?'Quality review required':'Traceability complete';
+    card.classList.toggle('selected',showResult&&i===best);
+  });
+  const option=pairingBody.selectedOptions[0].textContent;
+  const as43=option.split('AS43 ')[1];
+  pairingResult.innerHTML='<b>'+pairingCards[best].querySelector('h3').textContent+'</b><br>AS43 '+as43+' · MA41 Station '+(rear?'150':'200')+'<br>Predicted gap/flush '+values[best]+' mm · '+scores[best]+'% simulated compatibility · Approval pending';
+  pairingResult.style.display=showResult?'block':'none';
+}
+pairButton.textContent='Show best fit';
+pairButton.addEventListener('click',()=>refreshPairing(true));
+pairingBody.addEventListener('change',()=>refreshPairing(false));
+pairingType.addEventListener('change',()=>refreshPairing(false));
+pairingCards[0].parentElement.before(pairButton,pairingResult);
+refreshPairing(false);
+</script></body>
 </html>
