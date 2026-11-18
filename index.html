@@ -489,7 +489,29 @@ titles.geometry='Geometry Pairing';
 document.querySelector('[data-view="geometry"] span').textContent='Geometry Pairing';
 // Keep the agreed second scenario visible without inventing the clinching case.
 const clinchingView=document.createElement('section');clinchingView.className='view';clinchingView.id='clinching';
-clinchingView.innerHTML='<article class="card pitch-card"><div class="label cyan">SCENARIO 2 · CLINCHING PREDICTIVE ANALYSIS</div><h2>Clinching Analysis</h2><span class="badge amber">CASE DETAILS PENDING</span></article>';
+clinchingView.innerHTML=`
+  <section class="card pitch-card">
+    <div class="section-title"><h2>Clinching Analysis</h2><span class="badge amber">ILLUSTRATIVE DATA</span></div>
+    <div class="formgrid"><div class="field"><label for="clinchSample">Cycle sample</label><select id="clinchSample"><option value="stable">Stable cycles</option><option value="drift">Force trending low</option></select></div></div>
+    <button type="button" class="btn primary" id="clinchRun" style="margin:16px 0">Run analysis</button>
+    <div id="clinchResult" role="status"></div>
+    <div class="table-wrap"><table class="table"><thead><tr><th>Cycle</th><th>Peak force (% of sample baseline)</th></tr></thead><tbody id="clinchCycles"></tbody></table></div>
+  </section>`;
+const clinchSamples={stable:[100,101,99,100],drift:[100,97,94,91]};
+function renderClinchSample(){
+  const readings=clinchSamples[clinchingView.querySelector('#clinchSample').value];
+  clinchingView.querySelector('#clinchCycles').innerHTML=readings.map((value,index)=>'<tr><td>'+ (index+1)+'</td><td>'+value+'%</td></tr>').join('');
+  clinchingView.querySelector('#clinchResult').textContent='';
+  return readings;
+}
+clinchingView.querySelector('#clinchSample').addEventListener('change',renderClinchSample);
+clinchingView.querySelector('#clinchRun').addEventListener('click',()=>{
+  const readings=renderClinchSample();
+  const drop=readings[0]-readings.at(-1);
+  const drift=drop>=6 && readings.slice(1).every((value,index)=>value<readings[index]);
+  clinchingView.querySelector('#clinchResult').innerHTML='<p><strong class="'+(drift?'warn':'good')+'">'+(drift?'Drift flagged · Review sample':'Stable sample')+'</strong> · Peak force '+readings[0]+'% → '+readings.at(-1)+'%</p><p class="delta">Demo rule: flag three consecutive drops totalling at least 6 percentage points.</p>';
+});
+renderClinchSample();
 document.querySelector('.content').appendChild(clinchingView);
 const clinchingNav=document.createElement('button');clinchingNav.dataset.view='clinching';clinchingNav.innerHTML='<i class="dot"></i><span>Clinching Analysis</span>';
 document.querySelector('[data-view="geometry"]').insertAdjacentElement('afterend',clinchingNav);
