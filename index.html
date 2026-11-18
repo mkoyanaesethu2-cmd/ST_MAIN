@@ -403,89 +403,100 @@ body:not(:has(#overview.active)) #runBtn{display:none}
 <script>document.querySelectorAll('.source-tabs button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.source-tabs button').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.source-pane').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById('source-'+b.dataset.source).classList.add('active')}));</script><script>
 const clinchingView=document.createElement('section');
 clinchingView.id='smartqClinching';
+clinchingView.className='card pitch-card';
 clinchingView.innerHTML=`
-<section class="card pitch-card">
-<div class="section-title"><h2>Fender clinching · Broken die O-ring</h2><span class="badge amber">SIMULATED REPLAY</span></div>
-<div class="pitch-grid"><div><b>304+ units affected</b><p>Reported incident · loose fender clinch points</p></div><div><b>Controller OK</b><p>Reference re-taught with the broken O-ring</p></div><div><b>SmartQ baseline</b><p>Last validated curve for the same profile · MSB via MQTT</p></div></div>
-<button type="button" class="btn primary" id="clinchRun">Replay 10 units</button>
-<button type="button" class="btn" id="clinchNext">Next unit</button>
-<button type="button" class="btn" id="clinchReset">Reset</button>
-<p id="clinchProgress"></p><div id="clinchStatus" role="status" class="notice"></div>
-<div class="table-wrap"><table class="table"><thead><tr><th>Curve feature</th><th>Validated reference</th><th>Re-taught reference</th><th>Current unit</th><th>Change vs validated</th></tr></thead><tbody id="clinchCurve"></tbody></table></div>
-<p class="delta">Illustrative measurements and thresholds. Warning after 10 consecutive units outside a demo limit.</p>
-</section>
-<section class="card pitch-card"><h2>Containment opportunity</h2><div class="pitch-grid"><div><b>304 units</b><p>Conservative illustration based on the reported incident</p></div><div><b>10 units</b><p>Hold and inspect at the warning</p></div><div><b>294 potentially avoided</b><p>If production stops at the warning and resumes after repair and joint verification.</p></div></div></section>`;
-const clinchFeatures=[
-  {name:'Early forming force',good:9,taught:9,limit:2,unit:'kN'},
-  {name:'Deep drawing force',good:19,taught:12,limit:4,unit:'kN'},
-  {name:'Compression force',good:29,taught:23,limit:4,unit:'kN'},
-  {name:'Final force',good:34,taught:29,limit:3,unit:'kN'},
-  {name:'Final displacement',good:5.08,taught:5.42,limit:0.2,unit:'mm'}
-];
-const clinchEl=id=>clinchingView.querySelector('#'+id);
-let clinchUnit=0,clinchStreak=0,clinchTimer=null;
-function renderClinchReplay(values=[]){
-  clinchEl('clinchCurve').innerHTML=clinchFeatures.map((f,i)=>{
-    const fmt=value=>value.toFixed(f.unit==='mm'?2:1)+' '+f.unit;
-    const change=values[i]-f.good;
-    const current=Number.isFinite(change);
-    return '<tr><td>'+f.name+'</td><td>'+fmt(f.good)+'</td><td>'+fmt(f.taught)+'</td><td>'+(current?fmt(values[i]):'—')+'</td><td class="'+(Math.abs(change)>f.limit?'warn':'')+'">'+(current?(change>0?'+':'')+fmt(change):'—')+'</td></tr>';
-  }).join('');
-  clinchEl('clinchProgress').textContent='Units replayed '+clinchUnit+'/10 · Consecutive deviations '+clinchStreak+'/10';
-  clinchEl('clinchStatus').textContent=clinchUnit===0?'Ready to replay':clinchStreak===10?'SMARTQ WARNING · Controller OK · Stop and inspect the die and joints. Hold the 10 suspect units.':'Controller OK · SmartQ tracking deviation';
-  clinchEl('clinchStatus').className=clinchStreak===10?'notice warn':'notice';
-  clinchEl('clinchRun').disabled=clinchTimer!==null||clinchUnit===10;
-  clinchEl('clinchNext').disabled=clinchEl('clinchRun').disabled;
-}
-function stepClinchReplay(){
-  if(clinchUnit>=10)return;
-  clinchUnit++;
-  const variation=(clinchUnit%3-1)*0.2;
-  const values=clinchFeatures.map(f=>f.taught+variation*(f.unit==='mm'?0.1:1));
-  clinchStreak=clinchFeatures.some((f,i)=>Math.abs(values[i]-f.good)>f.limit)?clinchStreak+1:0;
-  if(clinchUnit===10){clearInterval(clinchTimer);clinchTimer=null;}
-  renderClinchReplay(values);
-}
-clinchEl('clinchRun').addEventListener('click',()=>{
-  clinchTimer=setInterval(stepClinchReplay,420);
-  stepClinchReplay();
-});
-clinchEl('clinchNext').addEventListener('click',stepClinchReplay);
-clinchEl('clinchReset').addEventListener('click',()=>{
-  clearInterval(clinchTimer);clinchTimer=null;
-  clinchUnit=0;clinchStreak=0;
-  renderClinchReplay();
-});
-renderClinchReplay();
-
+<div class="section-title"><h2>Clinching · Learn and monitor</h2><span class="badge amber">SIMULATED MSB DATA</span></div>
+<div class="formgrid"><div class="field"><label for="clinchSample">Post-teach sample</label><select id="clinchSample"><option value="shift">Repeated curve deviation</option><option value="stable">Stable curves</option></select></div></div>
+<p id="clinchBaseline"></p>
+<div class="fds-actions"><button class="btn primary" id="clinchNext" type="button">Process next clinch point</button><button class="btn" id="clinchRun" type="button">Run all points</button><button class="btn" id="clinchReset" type="button">Reset</button></div>
+<div class="notice" id="clinchStatus" role="status"></div>
+<div class="table-wrap"><table class="table"><thead><tr><th>Unit / point</th><th>Controller / quality</th><th>Deep draw Δ</th><th>Compression Δ</th><th>Final force Δ</th><th>Final distance Δ</th></tr></thead><tbody id="clinchRows"></tbody></table></div>
+<p id="clinchReview" aria-live="polite"></p>
+<button class="btn primary" id="clinchCopilot" type="button" hidden>Open in Solution Copilot</button>`;
 document.getElementById('smartq').prepend(clinchingView);
 const clinchCase=document.createElement('section');
 clinchCase.className='card pitch-card';
 clinchCase.hidden=true;
 document.getElementById('solutions').prepend(clinchCase);
-const openClinchCase=document.createElement('button');
-openClinchCase.type='button';
-openClinchCase.className='btn primary';
-openClinchCase.textContent='Open in Solution Copilot';
-openClinchCase.disabled=true;
-clinchEl('clinchStatus').after(openClinchCase);
-const containment=clinchingView.lastElementChild;
-containment.hidden=true;
-const priorRenderClinch=renderClinchReplay;
-renderClinchReplay=function(values){
-  priorRenderClinch(values);
-  const warning=clinchStreak===10;
-  openClinchCase.disabled=!warning;
-  containment.hidden=!warning;
-  if(!warning)clinchCase.hidden=true;
-};
-openClinchCase.addEventListener('click',()=>{
-  if(clinchStreak!==10)return;
-  clinchCase.innerHTML='<h2>Fender clinching · SmartQ warning at unit 10</h2><p>Controller OK against the re-taught reference. SmartQ detected persistent deviations from the validated reference for the same profile.</p><p><b>Evidence</b> · '+clinchEl('clinchCurve').querySelectorAll('tr')[1].lastElementChild.textContent+' deep drawing force, '+clinchEl('clinchCurve').querySelectorAll('tr')[3].lastElementChild.textContent+' final force, '+clinchEl('clinchCurve').querySelectorAll('tr')[4].lastElementChild.textContent+' final displacement versus validated reference.</p><p><b>Proposed response</b> · Request a stop and hold the 10 suspect units. Inspect the die O-ring and fender clinch points, then verify joint quality before restart.</p><p><b>294 potentially avoided</b> · Simulated comparison against 304 units, assuming an immediate stop at the warning.</p>';
+const clinchField=id=>clinchingView.querySelector('#'+id);
+const clinchUnits=['kN','kN','kN','mm'];
+const demoTolerance=[1.5,1.5,1.5,0.08];
+const history=[
+  [18.8,28.9,33.7,5.07],[19.1,29.2,34.1,5.09],[19.0,28.8,34.0,5.08],
+  [19.2,29.1,34.2,5.10],[18.9,29.0,34.0,5.06],[19.0,29.0,34.0,5.08]
+];
+const verifiedStable=[[19.2,29.1,34.2,5.09],[19.1,29.2,34.1,5.09],[19.3,29.1,34.2,5.08],[19.2,29.2,34.3,5.10]];
+const shifted=[[16.2,26.7,32.0,5.23],[16.1,26.6,32.1,5.24],[16.3,26.8,32.0,5.22],[16.2,26.7,31.9,5.23]];
+function learnClinchReference(rows){
+  return demoTolerance.map((floor,i)=>{
+    const mean=rows.reduce((sum,row)=>sum+row[i],0)/rows.length;
+    const spread=Math.sqrt(rows.reduce((sum,row)=>sum+(row[i]-mean)**2,0)/rows.length);
+    return {mean,limit:Math.max(floor,3*spread)};
+  });
+}
+const clinchFormat=(value,i)=>value.toFixed(i===3?2:1)+' '+clinchUnits[i];
+let reference,pointIndex,signatures,clinchWarning;
+function showClinchReference(version,count){
+  clinchField('clinchBaseline').textContent='Same profile · Reference '+version+' · '+count+' verified good points · '+reference.map((f,i)=>clinchFormat(f.mean,i)).join(' / ');
+}
+function resetClinchLearning(){
+  reference=learnClinchReference(history);
+  pointIndex=0;
+  signatures=new Map();
+  clinchWarning=null;
+  showClinchReference('v1',history.length);
+  clinchField('clinchRows').replaceChildren();
+  clinchField('clinchStatus').textContent='Controller re-taught · SmartQ is monitoring against reference v1.';
+  clinchField('clinchReview').textContent='Reference review every 4 points in this demo. Updates use independently verified, in-family results.';
+  clinchField('clinchNext').disabled=false;
+  clinchField('clinchRun').disabled=false;
+  clinchField('clinchCopilot').hidden=true;
+  clinchCase.hidden=true;
+}
+function processClinchPoint(){
+  if(pointIndex>=4)return;
+  const stable=clinchField('clinchSample').value==='stable';
+  const values=(stable?verifiedStable:shifted)[pointIndex];
+  const unit=Math.floor(pointIndex/2)+1;
+  const point=pointIndex%2+1;
+  const differences=reference.map((f,i)=>values[i]-f.mean);
+  const signature=differences.map((d,i)=>Math.abs(d)>reference[i].limit?Math.sign(d):0).join(',');
+  if(signature!=='0,0,0,0'){
+    if(!signatures.has(signature))signatures.set(signature,new Set());
+    const distinctUnits=signatures.get(signature);
+    distinctUnits.add(unit);
+    if(distinctUnits.size>=2&&!clinchWarning)clinchWarning={point:pointIndex+1,units:[...distinctUnits],differences};
+  }
+  const row=clinchField('clinchRows').insertRow();
+  ['Unit '+unit+' / '+point,'OK / OK',...differences.map((d,i)=>(d>0?'+':'')+clinchFormat(d,i))].forEach(value=>row.insertCell().textContent=value);
+  pointIndex++;
+  clinchField('clinchStatus').textContent=clinchWarning?'SMARTQ WARNING · Same deviation on units '+clinchWarning.units.join(' and ')+' · Controller and quality OK · Flagged at point '+clinchWarning.point:signature==='0,0,0,0'?'Within learned range · '+pointIndex+'/4 points processed':'Deviation tracked on '+signatures.get(signature).size+'/2 distinct units · '+pointIndex+'/4 points processed';
+  clinchField('clinchCopilot').hidden=!clinchWarning;
+  if(pointIndex===4){
+    clinchField('clinchNext').disabled=true;
+    clinchField('clinchRun').disabled=true;
+    if(stable&&signatures.size===0){
+      const verifiedHistory=history.concat(verifiedStable);
+      reference=learnClinchReference(verifiedHistory);
+      showClinchReference('v2',verifiedHistory.length);
+      clinchField('clinchReview').textContent='Scheduled review complete · v2 learned from 10 verified good points.';
+    }else{
+      clinchField('clinchReview').textContent='Scheduled review complete · v1 retained. Shifted curves are excluded from learning pending investigation.';
+    }
+  }
+}
+clinchField('clinchSample').addEventListener('change',resetClinchLearning);
+clinchField('clinchReset').addEventListener('click',resetClinchLearning);
+clinchField('clinchNext').addEventListener('click',processClinchPoint);
+clinchField('clinchRun').addEventListener('click',()=>{while(pointIndex<4)processClinchPoint();});
+clinchField('clinchCopilot').addEventListener('click',()=>{
+  if(!clinchWarning)return;
+  clinchCase.innerHTML='<h2>Clinching · Post-teach deviation</h2><p>Same directional deviation on units '+clinchWarning.units.join(' and ')+' against learned reference v1. Controller and quality results are OK.</p><p><b>Evidence at warning</b> · Deep draw, compression, final force and final distance: '+clinchWarning.differences.map(clinchFormat).join(' / ')+'</p><p><b>Proposed response</b> · Review the teach-in and compare the process curves. Verify joint quality independently before accepting new examples into the reference.</p>';
   clinchCase.hidden=false;
   document.querySelector('[data-view="solutions"]').click();
   clinchCase.scrollIntoView({block:'start'});
 });
+resetClinchLearning();
 const pairButton=document.getElementById('pairBtn');
 const pairingBody=document.getElementById('bodySelect');
 const pairingResult=document.getElementById('pairResult');
