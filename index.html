@@ -407,7 +407,7 @@ clinchingView.className='card pitch-card';
 clinchingView.innerHTML=`
 <div class="section-title"><h2>Clinching · Learn and monitor</h2><span class="badge amber">SIMULATED MSB DATA</span></div>
 <div class="formgrid"><div class="field"><label for="clinchSample">Post-teach sample</label><select id="clinchSample"><option value="shift">Repeated curve deviation</option><option value="stable">Stable curves</option></select></div></div>
-<p id="clinchBaseline"></p>
+<p id="clinchBaseline"></p><p id="clinchTeachDelta"></p>
 <div class="fds-actions"><button class="btn primary" id="clinchNext" type="button">Process next clinch point</button><button class="btn" id="clinchRun" type="button">Run all points</button><button class="btn" id="clinchReset" type="button">Reset</button></div>
 <div class="notice" id="clinchStatus" role="status"></div>
 <div class="table-wrap"><table class="table"><thead><tr><th>Unit / point</th><th>Controller / quality</th><th>Deep draw Δ</th><th>Compression Δ</th><th>Final force Δ</th><th>Final distance Δ</th></tr></thead><tbody id="clinchRows"></tbody></table></div>
@@ -445,6 +445,10 @@ function resetClinchLearning(){
   signatures=new Map();
   clinchWarning=null;
   showClinchReference('v1',history.length);
+  const taught=clinchField('clinchSample').value==='stable'?verifiedStable:shifted;
+  const taughtReference=learnClinchReference(taught);
+  const teachDelta=taughtReference.map((feature,i)=>feature.mean-reference[i].mean);
+  clinchField('clinchTeachDelta').textContent='Re-taught reference vs v1 · Deep draw, compression, final force, final distance: '+teachDelta.map((d,i)=>(d>0?'+':'')+clinchFormat(d,i)).join(' / ');
   clinchField('clinchRows').replaceChildren();
   clinchField('clinchStatus').textContent='Controller re-taught · SmartQ is monitoring against reference v1.';
   clinchField('clinchReview').textContent='Reference review every 4 points in this demo. Updates use independently verified, in-family results.';
@@ -465,7 +469,10 @@ function processClinchPoint(){
     if(!signatures.has(signature))signatures.set(signature,new Set());
     const distinctUnits=signatures.get(signature);
     distinctUnits.add(unit);
-    if(distinctUnits.size>=2&&!clinchWarning)clinchWarning={point:pointIndex+1,units:[...distinctUnits],differences};
+    if(distinctUnits.size>=2&&!clinchWarning){
+      clinchWarning={point:pointIndex+1,units:[...distinctUnits],differences};
+      publishClinchFlag();
+    }
   }
   const row=clinchField('clinchRows').insertRow();
   ['Unit '+unit+' / '+point,'OK / OK',...differences.map((d,i)=>(d>0?'+':'')+clinchFormat(d,i))].forEach(value=>row.insertCell().textContent=value);
@@ -489,10 +496,13 @@ clinchField('clinchSample').addEventListener('change',resetClinchLearning);
 clinchField('clinchReset').addEventListener('click',resetClinchLearning);
 clinchField('clinchNext').addEventListener('click',processClinchPoint);
 clinchField('clinchRun').addEventListener('click',()=>{while(pointIndex<4)processClinchPoint();});
+function publishClinchFlag(){
+  if(!clinchWarning)return;
+  clinchCase.innerHTML='<span class="badge amber">FLAGGED FOR REVIEW</span><h2>Clinching · Post-teach deviation</h2><p>Same directional deviation on units '+clinchWarning.units.join(' and ')+' against learned reference v1. Controller and quality results are OK.</p><p><b>Evidence at warning</b> · Deep draw, compression, final force and final distance: '+clinchWarning.differences.map(clinchFormat).join(' / ')+'</p><p><b>Proposed response</b> · Review the teach-in and compare the process curves. Verify joint quality independently before accepting new examples into the reference.</p>';
+  clinchCase.hidden=false;
+}
 clinchField('clinchCopilot').addEventListener('click',()=>{
   if(!clinchWarning)return;
-  clinchCase.innerHTML='<h2>Clinching · Post-teach deviation</h2><p>Same directional deviation on units '+clinchWarning.units.join(' and ')+' against learned reference v1. Controller and quality results are OK.</p><p><b>Evidence at warning</b> · Deep draw, compression, final force and final distance: '+clinchWarning.differences.map(clinchFormat).join(' / ')+'</p><p><b>Proposed response</b> · Review the teach-in and compare the process curves. Verify joint quality independently before accepting new examples into the reference.</p>';
-  clinchCase.hidden=false;
   document.querySelector('[data-view="solutions"]').click();
   clinchCase.scrollIntoView({block:'start'});
 });
