@@ -73,6 +73,15 @@ body:not(:has(#overview.active)) #runBtn{display:none}
   .pairing-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
   .pairing-results div{border:1px solid #355c70;border-radius:8px;padding:10px}
   .pairing-results small{display:block;margin-top:4px;color:#c0d2df}
+  .assembly-replay{margin-top:16px;padding:12px;border:1px solid #305065;border-radius:12px;background:#0b1824}
+  .assembly-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:8px}
+  .assembly-head h4{margin:0;font-size:1rem}.assembly-head span{color:#abc6d8;font-size:.8rem}
+  .assembly-replay svg{display:block;width:100%;height:auto}
+  .assembly-measuring{stroke:#65e8ff;fill:#1d4858}
+  .assembly-dispatch{stroke:#ffbc6b}
+  #assemblyStatus{margin:9px 0 0;color:#d2e8f5;font-size:.9rem}
+  #assemblySuccess{margin:11px 0 0;padding:12px;border:1px solid #53deb0;border-radius:8px;background:#10362c;color:#c6ffe9;font-size:1.12rem;font-weight:800}
+  #assemblySuccess span{margin-right:6px}
   .pairing-signal{animation:pairing-pulse .7s ease}
   @keyframes pairing-pulse{50%{box-shadow:inset 0 0 22px #4ce1ff43;border-color:#6ee9ff}}
   @media(max-width:820px){.pairing-inputs,.pairing-results{grid-template-columns:1fr}.pairing-photo{max-height:190px}.pairing-merge{grid-template-columns:1fr}.pairing-merge span:not(:first-child){display:none}}
@@ -146,6 +155,55 @@ body:not(:has(#overview.active)) #runBtn{display:none}
           <section class="pairing-output" id="pairingOutput" aria-labelledby="pairing-output-title">
             <div class="section-title"><div><h3 id="pairing-output-title">MA41 · Station 200</h3><p>Batch-based best fit</p></div><button type="button" class="btn primary" id="pairBtn">Run pairing</button></div>
             <div id="pairResult" role="status"></div>
+            <div class="assembly-replay">
+              <div class="assembly-head"><h4>Body and door transfer</h4><span>Simulated replay</span></div>
+              <svg id="assemblyScene" viewBox="0 0 760 400" role="img" aria-labelledby="assemblyTitle assemblyDescription">
+                <title id="assemblyTitle">AS41, AS43 and MA41 assembly schematic</title>
+                <desc id="assemblyDescription">A bare body passes both measurement stations, then travels to MA41 as the paired doors leave IDZ. Two robots install the doors.</desc>
+                <defs>
+                  <pattern id="assemblyGrid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0V24" fill="none" stroke="#263d50" stroke-width="1"/></pattern>
+                  <linearGradient id="assemblyMetal" x2="0" y2="1"><stop stop-color="#d7edf4"/><stop offset="1" stop-color="#648ba3"/></linearGradient>
+                  <path id="assemblyDoor" d="M-18-8H18L22-5V5L18 8H-18L-22 5V-5Z"/>
+                </defs>
+                <rect width="760" height="400" rx="14" fill="#081520"/>
+                <rect width="760" height="400" rx="14" fill="url(#assemblyGrid)" opacity=".55"/>
+                <rect x="556" y="37" width="185" height="326" rx="16" fill="#102333" stroke="#3d657d"/>
+                <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M16 200H722" stroke="#29465b" stroke-width="66"/>
+                  <path d="M16 200H722" stroke="#0b1a28" stroke-width="60"/>
+                  <path d="M16 200H722" stroke="#3d6f88" stroke-width="2" stroke-dasharray="9 10"/>
+                  <path id="assemblyDoorPaths" d="M298 80H480L620 128H648M298 320H480L620 272H648" stroke="#a87840" stroke-width="3" stroke-dasharray="7 7"/>
+                </g>
+                <g fill="#102839" stroke="#42738e" stroke-width="2">
+                  <rect id="assemblyAS41" x="101" y="155" width="108" height="90" rx="10"/>
+                  <rect id="assemblyAS43" x="330" y="155" width="108" height="90" rx="10"/>
+                </g>
+                <g fill="#d2e8f5" font-family="system-ui,sans-serif" font-size="19" font-weight="700">
+                  <text x="155" y="140" text-anchor="middle">AS41</text>
+                  <text x="384" y="140" text-anchor="middle">AS43</text>
+                  <text id="assemblyStation" x="650" y="28" text-anchor="middle">MA41 · Station 200</text>
+                </g>
+                <g fill="#ffcf90" font-family="system-ui,sans-serif" font-size="17" font-weight="600">
+                  <text id="assemblyLeftLabel" x="298" y="59">IDZ · Left doors</text>
+                  <text id="assemblyRightLabel" x="298" y="353">IDZ · Right doors</text>
+                </g>
+                <g id="assemblyBody" transform="translate(65 200)">
+                  <path d="M-53-13Q-50-23-40-23H37Q48-23 53-13V13Q48 23 37 23H-40Q-50 23-53 13Z M-20-20H20V-8H-20Z M-20 8H20V20H-20Z" fill="url(#assemblyMetal)" fill-rule="evenodd" stroke="#d6efff" stroke-width="1.5"/>
+                  <path d="M-44-12H-26L-21-7V7L-26 12H-44ZM27-11H43V11H27ZM-17-5H17V5H-17Z" fill="#254558"/>
+                  <path d="M-37-25V-21M37-25V-21M-37 21V25M37 21V25" stroke="#bce4f6" stroke-width="4"/>
+                </g>
+                <g fill="#de9344" stroke="#ffd9a4" stroke-width="2">
+                  <g id="assemblyLeftRobot"><polyline id="assemblyLeftArm" fill="none" stroke="#efaa62" stroke-width="8" stroke-linejoin="round" stroke-linecap="round" points="704,95 681,109 671,129"/><circle cx="704" cy="95" r="11"/><circle id="assemblyLeftElbow" cx="681" cy="109" r="6"/></g>
+                  <g id="assemblyRightRobot"><polyline id="assemblyRightArm" fill="none" stroke="#efaa62" stroke-width="8" stroke-linejoin="round" stroke-linecap="round" points="704,305 681,291 671,271"/><circle cx="704" cy="305" r="11"/><circle id="assemblyRightElbow" cx="681" cy="291" r="6"/></g>
+                </g>
+                <g fill="#f2af61" stroke="#ffe3b7" stroke-width="1.5">
+                  <g id="assemblyLeftDoor" transform="translate(298 80)"><use href="#assemblyDoor"/><path d="M-12-3H12" stroke="#714522" stroke-width="2"/></g>
+                  <g id="assemblyRightDoor" transform="translate(298 320)"><use href="#assemblyDoor"/><path d="M-12 3H12" stroke="#714522" stroke-width="2"/></g>
+                </g>
+              </svg>
+              <p id="assemblyStatus" role="status">Run pairing to replay the transfer and installation.</p>
+              <p id="assemblySuccess" hidden><span aria-hidden="true">✓</span> Regulation Errors Avoided</p>
+            </div>
           </section>
         </section>
       </section>
@@ -585,6 +643,72 @@ function rankBatches(batches, body) {
     return {id, offsets, eligible, residuals, worst, total};
   }).sort((a,b) => Number(b.eligible) - Number(a.eligible) || a.worst - b.worst || a.total - b.total);
 }
+const assembly = Object.fromEntries(['Scene','Body','AS41','AS43','Station','DoorPaths','Status','Success',
+  ...['Left','Right'].flatMap(side => ['Label','Arm','Elbow','Door'].map(part => side + part))
+].map(key => [key, document.getElementById('assembly' + key)]));
+let assemblyFrame;
+const assemblyMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const interpolate = (start, end, fraction) => start + (end - start) * Math.max(0, Math.min(1, fraction));
+function placeAssemblyPart(part, x, y) {
+  part.setAttribute('transform', 'translate(' + x + ' ' + y + ')');
+}
+function drawAssembly(time) {
+  const bodyX = time < 0.8 ? interpolate(65,155,time / 0.8) : time < 2.8 ?
+    interpolate(155,384,(time - 1.35) / 0.9) : interpolate(384,648,(time - 2.8) / 1.75);
+  placeAssemblyPart(assembly.Body, bodyX, 200);
+  assembly.AS41.classList.toggle('assembly-measuring', time >= 0.8 && time < 1.35);
+  assembly.AS43.classList.toggle('assembly-measuring', time >= 2.25 && time < 2.8);
+  assembly.DoorPaths.classList.toggle('assembly-dispatch', time >= 2.8 && time < 4.55);
+  for (const [side, direction] of [['Left',-1],['Right',1]]) {
+    const transfer = (time - 2.8) / 1.75;
+    const fitting = (time - 4.55) / 1.45;
+    const doorX = transfer < 0.52 ? interpolate(298,480,transfer / 0.52) :
+      interpolate(480,648,(transfer - 0.52) / 0.48);
+    const offset = fitting > 0 ? interpolate(72,14,fitting) : interpolate(120,72,(transfer - 0.52) / 0.48);
+    const doorY = 200 + direction * offset;
+    placeAssemblyPart(assembly[side + 'Door'], doorX, doorY);
+    const reach = time < 4.55 ? 0 : 1 - Math.max(0, Math.min(1, (time - 6) / 0.35));
+    const baseY = 200 + direction * 105;
+    const elbowY = baseY - direction * interpolate(14,interpolate(22,43,fitting),reach);
+    const tipX = interpolate(671,doorX + 21,reach);
+    const tipY = interpolate(200 + direction * 71,doorY,reach);
+    assembly[side + 'Arm'].setAttribute('points', '704,' + baseY + ' 681,' + elbowY + ' ' + tipX + ',' + tipY);
+    assembly[side + 'Elbow'].setAttribute('cy',elbowY);
+  }
+  const status = time === 0 ? 'Run pairing to replay the transfer and installation.' :
+    time < 1.35 ? 'Body-in-white at AS41 · First measurement' :
+    time < 2.8 ? 'Body-in-white at AS43 · Second measurement' :
+    time < 4.55 ? 'AS43 released the body · Matched doors dispatched to MA41' :
+    time < 6.05 ? 'MA41 · Robots positioning both doors in the body' :
+    'MA41 · Both doors fitted in the simulation';
+  if (assembly.Status.textContent !== status) assembly.Status.textContent = status;
+  assembly.Success.hidden = time < 6.05;
+}
+function playAssembly(batches, line, station) {
+  cancelAnimationFrame(assemblyFrame);
+  assembly.Station.textContent = 'MA41 · Station ' + station;
+  for (const side of ['Left','Right']) {
+    const batch = batches[side.toLowerCase()];
+    assembly[side + 'Label'].textContent = line + ' · ' + side + (batch ? ' batch ' + batch.id : ' doors');
+  }
+  drawAssembly(0);
+  if (!batches.left || !batches.right) {
+    if (Object.keys(batches).length) assembly.Status.textContent = 'Transfer held · An in-spec batch is needed for each side.';
+    return;
+  }
+  if (assemblyMotion.matches) {
+    drawAssembly(6.1);
+    return;
+  }
+  let start;
+  function advance(now) {
+    start ??= now;
+    const time = Math.min(6.35, (now - start) / 1000);
+    drawAssembly(time);
+    if (time < 6.35) assemblyFrame = requestAnimationFrame(advance);
+  }
+  assemblyFrame = requestAnimationFrame(advance);
+}
 function renderPairing(run = false) {
   const body = bodyReadings[pairingBody.value];
   const vin = pairingBody.selectedOptions[0].textContent;
@@ -596,11 +720,13 @@ function renderPairing(run = false) {
     document.querySelector('#body' + gate + ' p').textContent =
       vin + ' · LH ' + formatOffset(body.left[i]) + ' mm · RH ' + formatOffset(body.right[i]) + ' mm';
   });
+  const selectedBatches = {};
   const results = document.createElement('div');
   results.className = 'pairing-results';
   ['right','left'].forEach(side => {
     const ranked = rankBatches(doorBatches[position][side], body[side]);
     const best = ranked.find(batch => batch.eligible);
+    selectedBatches[side] = best;
     document.getElementById(side + 'Line').textContent =
       'IDZ ' + line + ' · ' + (side === 'right' ? 'Right' : 'Left') + ' door batches';
     const list = document.getElementById(side + 'Batches');
@@ -626,6 +752,7 @@ function renderPairing(run = false) {
     result.append(title,detail);
     results.append(result);
   });
+  playAssembly(run ? selectedBatches : {}, line, station);
   if (!run) {
     pairingResult.textContent = 'Run pairing to compare the in-spec batches against both measurements.';
     return;
