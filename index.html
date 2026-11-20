@@ -52,6 +52,7 @@ body:not(:has(#overview.active)) #runBtn{display:none}
 @media(max-width:1050px){.nav-folder button span{display:inline}.nav-folder button{font-size:.75rem;padding:8px}}
 @media(max-width:700px){.nav-folder[open]{position:fixed;bottom:64px;right:8px;padding:6px;background:var(--panel);border:1px solid var(--line);border-radius:9px}}
 </style><style>
+  #vehicle .genome-scale{color:var(--silver);font-size:.8rem;margin:12px 0}
   .pairing-map{background:radial-gradient(ellipse at top,#142d3d,#0b1219 65%);border-color:#2d4859}
   .pairing-map h2{font-size:clamp(1.5rem,3vw,2.4rem)}
   .pairing-inputs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
@@ -119,7 +120,7 @@ body:not(:has(#overview.active)) #runBtn{display:none}
         </div>
       </section>
 
-      <section class="view" id="vehicle"><div class="grid layout"><div class="card"><div class="section-title"><div><h2>Vehicle EL-C206-18472</h2><p>Complete synthetic manufacturing memory</p></div><span class="badge amber">INTERCEPTABLE</span></div><table class="table"><thead><tr><th>Stage</th><th>Evidence</th><th>Status</th><th>Quality influence</th></tr></thead><tbody><tr><td><strong>Incoming</strong></td><td>Door batch D184 · +0.18 mm signature</td><td><span class="badge green">IN SPEC</span></td><td>Weak contributor</td></tr><tr><td><strong>Body Shop</strong></td><td>BS-214 · recipe C206-R12</td><td><span class="badge amber">DRIFT</span></td><td>Opening position</td></tr><tr><td><strong>Geometry</strong></td><td>Feature LF-07 · +0.42 mm trend</td><td><span class="badge amber">TREND</span></td><td>Fit compatibility</td></tr><tr><td><strong>Assembly</strong></td><td>Mech 4 · 8 min away</td><td><span class="badge red">RISK</span></td><td>Gap / flushness</td></tr><tr><td><strong>Quality</strong></td><td>MRS historical family QF-221</td><td><span class="badge green">PREVENTABLE</span></td><td>Targeted response</td></tr></tbody></table><div class="section-title" style="margin-top:22px"><div><h2>Process signature</h2><p>Last 24 synthetic cycles</p></div></div><div class="chart" id="chart"></div></div><aside class="card"><div class="section-title"><div><h2>Affected population</h2><p>Same causal production fingerprint</p></div></div><table class="table"><tbody><tr><td><strong>EL-C206-18472</strong></td><td><span class="badge red">84%</span></td></tr><tr><td>EL-C206-18468</td><td><span class="badge amber">68%</span></td></tr><tr><td>EL-C206-18469</td><td><span class="badge amber">64%</span></td></tr><tr><td>EL-C206-18470</td><td><span class="badge amber">61%</span></td></tr><tr><td>EL-C206-18471</td><td><span class="badge amber">57%</span></td></tr><tr><td>EL-C206-18473</td><td><span class="badge amber">53%</span></td></tr></tbody></table><div class="recommend"><h3>Why these vehicles?</h3><p>Common supplier batch D184, BS-214 process window, recipe C206-R12 and similar inline body-opening geometry.</p></div></aside></div></section>
+      <section class="view" id="vehicle"><div class="grid layout"><div class="card"><div class="section-title"><div><h2>Vehicle EL-C206-18472</h2><p>Complete synthetic manufacturing memory</p></div><span class="badge" data-genome-quality="78"></span></div><table class="table"><thead><tr><th>Stage</th><th>Evidence</th><th>Status</th><th>Quality influence</th></tr></thead><tbody><tr><td><strong>Incoming</strong></td><td>Door batch D184 · +0.18 mm signature</td><td><span class="badge green">IN SPEC</span></td><td>Weak contributor</td></tr><tr><td><strong>Body Shop</strong></td><td>BS-214 · recipe C206-R12</td><td><span class="badge amber">DRIFT</span></td><td>Opening position</td></tr><tr><td><strong>Geometry</strong></td><td>Feature LF-07 · +0.42 mm trend</td><td><span class="badge amber">TREND</span></td><td>Fit compatibility</td></tr><tr><td><strong>Assembly</strong></td><td>Mech 4 · 8 min away</td><td><span class="badge red">RISK</span></td><td>Gap / flushness</td></tr><tr><td><strong>Quality</strong></td><td>MRS historical family QF-221</td><td><span class="badge green">PREVENTABLE</span></td><td>Targeted response</td></tr></tbody></table><div class="section-title" style="margin-top:22px"><div><h2>Process signature</h2><p>Last 24 synthetic cycles</p></div></div><div class="chart" id="chart"></div></div><aside class="card"><div class="section-title"><div><h2>Affected population</h2><p>Same causal production fingerprint · Sample quality scores</p></div></div><table class="table"><thead><tr><th scope="col">Vehicle</th><th scope="col">Predicted risk</th><th scope="col">Quality</th></tr></thead><tbody><tr><td><strong>EL-C206-18472</strong></td><td><span class="badge red">84%</span></td><td><span class="badge" data-genome-quality="78"></span></td></tr><tr><td>EL-C206-18468</td><td><span class="badge amber">68%</span></td><td><span class="badge" data-genome-quality="92"></span></td></tr><tr><td>EL-C206-18469</td><td><span class="badge amber">64%</span></td><td><span class="badge" data-genome-quality="80"></span></td></tr><tr><td>EL-C206-18470</td><td><span class="badge amber">61%</span></td><td><span class="badge" data-genome-quality="75"></span></td></tr><tr><td>EL-C206-18471</td><td><span class="badge amber">57%</span></td><td><span class="badge" data-genome-quality="72"></span></td></tr><tr><td>EL-C206-18473</td><td><span class="badge amber">53%</span></td><td><span class="badge" data-genome-quality="88"></span></td></tr></tbody></table><p class="genome-scale">Green &gt;80% · Yellow 75–80% · Red &lt;75%</p><div class="recommend"><h3>Why these vehicles?</h3><p>Common supplier batch D184, BS-214 process window, recipe C206-R12 and similar inline body-opening geometry.</p></div></aside></div></section>
 
       <section class="view active" id="geometry">
         <section class="card pairing-map" aria-labelledby="pairing-title">
@@ -411,7 +412,18 @@ body:not(:has(#overview.active)) #runBtn{display:none}
   const riskLabel=document.querySelector('#overview .riskbox .label');if(riskLabel)riskLabel.textContent='MA41 left-hand door fitment risk';
   document.getElementById('runBtn')?.addEventListener('click',()=>setTimeout(()=>{const r=document.getElementById('recommendation');if(r)r.textContent='Use the AS41 and AS43 body measurements to select the best-fit measured left-hand front and rear doors from the IDZ Door Lines batch before installation at MA41.'},1350));
 
-  const vehicleRows=document.querySelectorAll('#vehicle tbody tr');
+  function genomeQualityBand(score) {
+    if (score > 80) return ['green', 'Good'];
+    if (score >= 75) return ['amber', 'Good with warning'];
+    return ['red', 'Poor'];
+  }
+  document.querySelectorAll('#vehicle [data-genome-quality]').forEach(badge => {
+    const score = Number(badge.dataset.genomeQuality);
+    const [color, label] = genomeQualityBand(score);
+    badge.classList.add(color);
+    badge.textContent = score + '% · ' + label;
+  });
+  const vehicleRows=document.querySelectorAll('#vehicle .layout > .card tbody tr');
   const genomeRows=[
     ['AS41','LH aperture deviation +0.18 mm','MEASURED','Initial body geometry'],
     ['AS43','LH aperture deviation +0.42 mm','TREND','Confirmed fitment influence'],
