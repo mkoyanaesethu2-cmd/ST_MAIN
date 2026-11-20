@@ -51,6 +51,17 @@
 body:not(:has(#overview.active)) #runBtn{display:none}
 @media(max-width:1050px){.nav-folder button span{display:inline}.nav-folder button{font-size:.75rem;padding:8px}}
 @media(max-width:700px){.nav-folder[open]{position:fixed;bottom:64px;right:8px;padding:6px;background:var(--panel);border:1px solid var(--line);border-radius:9px}}
+</style><style>
+  .unit-journey{margin-bottom:16px}
+  .unit-route{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding-top:52px}
+  .unit-route::before{content:"";position:absolute;top:28px;left:16.67%;right:16.67%;height:2px;background:var(--line)}
+  .unit-marker{position:absolute;top:12px;left:calc(16.67% + var(--gate-index,0)*33.33%);transform:translateX(-50%);transition:left .55s ease;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--cyan);color:#071018;font-size:.72rem;font-weight:800}
+  .unit-stop{padding:9px 4px;color:var(--silver);background:#0d1218;border:1px solid var(--line);border-radius:8px;cursor:pointer}
+  .unit-stop[aria-pressed="true"]{border-color:var(--cyan);color:#fff}
+  .unit-stop small{display:block;margin-top:4px}
+  .unit-reading{padding:12px 0;min-height:6rem;color:var(--silver);line-height:1.5}
+  .unit-controls{display:flex;gap:8px;flex-wrap:wrap}
+  @media(prefers-reduced-motion:reduce){.unit-marker{transition:none}}
 </style></head>
 <body>
 <div class="app">
@@ -83,7 +94,21 @@ body:not(:has(#overview.active)) #runBtn{display:none}
         </div>
       </section>
 
-      <section class="view" id="vehicle"><div class="grid layout"><div class="card"><div class="section-title"><div><h2>Vehicle EL-C206-18472</h2><p>Complete synthetic manufacturing memory</p></div><span class="badge amber">INTERCEPTABLE</span></div><table class="table"><thead><tr><th>Stage</th><th>Evidence</th><th>Status</th><th>Quality influence</th></tr></thead><tbody><tr><td><strong>Incoming</strong></td><td>Door batch D184 · +0.18 mm signature</td><td><span class="badge green">IN SPEC</span></td><td>Weak contributor</td></tr><tr><td><strong>Body Shop</strong></td><td>BS-214 · recipe C206-R12</td><td><span class="badge amber">DRIFT</span></td><td>Opening position</td></tr><tr><td><strong>Geometry</strong></td><td>Feature LF-07 · +0.42 mm trend</td><td><span class="badge amber">TREND</span></td><td>Fit compatibility</td></tr><tr><td><strong>Assembly</strong></td><td>Mech 4 · 8 min away</td><td><span class="badge red">RISK</span></td><td>Gap / flushness</td></tr><tr><td><strong>Quality</strong></td><td>MRS historical family QF-221</td><td><span class="badge green">PREVENTABLE</span></td><td>Targeted response</td></tr></tbody></table><div class="section-title" style="margin-top:22px"><div><h2>Process signature</h2><p>Last 24 synthetic cycles</p></div></div><div class="chart" id="chart"></div></div><aside class="card"><div class="section-title"><div><h2>Affected population</h2><p>Same causal production fingerprint</p></div></div><table class="table"><tbody><tr><td><strong>EL-C206-18472</strong></td><td><span class="badge red">84%</span></td></tr><tr><td>EL-C206-18468</td><td><span class="badge amber">68%</span></td></tr><tr><td>EL-C206-18469</td><td><span class="badge amber">64%</span></td></tr><tr><td>EL-C206-18470</td><td><span class="badge amber">61%</span></td></tr><tr><td>EL-C206-18471</td><td><span class="badge amber">57%</span></td></tr><tr><td>EL-C206-18473</td><td><span class="badge amber">53%</span></td></tr></tbody></table><div class="recommend"><h3>Why these vehicles?</h3><p>Common supplier batch D184, BS-214 process window, recipe C206-R12 and similar inline body-opening geometry.</p></div></aside></div></section>
+      <section class="view" id="vehicle">
+        <section class="card unit-journey" aria-labelledby="unit-journey-title">
+          <div class="section-title"><div><h2 id="unit-journey-title">Unit gate journey</h2><p>EL-C206-18472 · Sample replay</p></div></div>
+          <div class="unit-route">
+            <span class="unit-marker" aria-hidden="true">UNIT</span>
+            <button class="unit-stop" type="button" aria-pressed="true">AS41<small>Measuring Gate</small></button>
+            <button class="unit-stop" type="button" aria-pressed="false">AS43<small>Measuring Gate</small></button>
+            <button class="unit-stop" type="button" aria-pressed="false">MRS<small>Quality Gate</small></button>
+          </div>
+          <div class="unit-reading" aria-live="polite" aria-atomic="true"></div>
+          <div class="unit-controls">
+            <button class="btn primary" id="unit-replay" type="button">Play journey</button>
+            <button class="btn" id="unit-next" type="button">Next gate</button>
+          </div>
+        </section><div class="grid layout"><div class="card"><div class="section-title"><div><h2>Vehicle EL-C206-18472</h2><p>Complete synthetic manufacturing memory</p></div><span class="badge amber">INTERCEPTABLE</span></div><table class="table"><thead><tr><th>Stage</th><th>Evidence</th><th>Status</th><th>Quality influence</th></tr></thead><tbody><tr><td><strong>Incoming</strong></td><td>Door batch D184 · +0.18 mm signature</td><td><span class="badge green">IN SPEC</span></td><td>Weak contributor</td></tr><tr><td><strong>Body Shop</strong></td><td>BS-214 · recipe C206-R12</td><td><span class="badge amber">DRIFT</span></td><td>Opening position</td></tr><tr><td><strong>Geometry</strong></td><td>Feature LF-07 · +0.42 mm trend</td><td><span class="badge amber">TREND</span></td><td>Fit compatibility</td></tr><tr><td><strong>Assembly</strong></td><td>Mech 4 · 8 min away</td><td><span class="badge red">RISK</span></td><td>Gap / flushness</td></tr><tr><td><strong>Quality</strong></td><td>MRS historical family QF-221</td><td><span class="badge green">PREVENTABLE</span></td><td>Targeted response</td></tr></tbody></table><div class="section-title" style="margin-top:22px"><div><h2>Process signature</h2><p>Last 24 synthetic cycles</p></div></div><div class="chart" id="chart"></div></div><aside class="card"><div class="section-title"><div><h2>Affected population</h2><p>Same causal production fingerprint</p></div></div><table class="table"><tbody><tr><td><strong>EL-C206-18472</strong></td><td><span class="badge red">84%</span></td></tr><tr><td>EL-C206-18468</td><td><span class="badge amber">68%</span></td></tr><tr><td>EL-C206-18469</td><td><span class="badge amber">64%</span></td></tr><tr><td>EL-C206-18470</td><td><span class="badge amber">61%</span></td></tr><tr><td>EL-C206-18471</td><td><span class="badge amber">57%</span></td></tr><tr><td>EL-C206-18473</td><td><span class="badge amber">53%</span></td></tr></tbody></table><div class="recommend"><h3>Why these vehicles?</h3><p>Common supplier batch D184, BS-214 process window, recipe C206-R12 and similar inline body-opening geometry.</p></div></aside></div></section>
 
       <section class="view active" id="geometry"><div class="card"><div class="section-title"><div><h2>Geometry-compatible part pairing</h2><p>Optimise fit only within approved interchangeability and engineering constraints</p></div><span class="pill">Synthetic recommendation</span></div><div class="formgrid"><div class="field"><label>Vehicle body</label><select id="bodySelect"><option value="a">EL-C206-18472 · opening +0.42 mm</option><option value="b">EL-C206-18481 · opening -0.11 mm</option></select></div><div class="field"><label>Fit objective</label><select><option>Minimise predicted gap and flush deviation</option></select></div></div><div class="parts" id="parts"><article class="part"><h3>Door D184-031</h3><div class="fit good">96%</div><div class="label">Compatibility</div><ul><li>Expected flush +0.08 mm</li><li>All hard constraints pass</li><li>Traceability complete</li></ul></article><article class="part"><h3>Door D184-026</h3><div class="fit warn">78%</div><div class="label">Compatibility</div><ul><li>Expected flush +0.31 mm</li><li>Adjustment likely</li><li>Traceability complete</li></ul></article><article class="part"><h3>Door D177-119</h3><div class="fit bad">41%</div><div class="label">Compatibility</div><ul><li>Expected flush +0.58 mm</li><li>Fit-risk threshold exceeded</li><li>Do not recommend</li></ul></article></div><button class="btn primary" id="pairBtn" style="margin-top:16px">Calculate best approved pairing</button><div class="notice" id="pairResult" style="margin-top:14px;margin-bottom:0;display:none"><b>Recommended: Door D184-031.</b> Predicted flushness +0.08 mm with 96% compatibility. Human approval and downstream verification required.</div></div></section>
 
@@ -301,6 +326,59 @@ body:not(:has(#overview.active)) #runBtn{display:none}
     ['MRS Quality','Post-fitment result required','VERIFY','Close the outcome loop']
   ];
   vehicleRows.forEach((row,i)=>{if(!genomeRows[i])return;const cells=row.children;cells[0].innerHTML='<strong>'+genomeRows[i][0]+'</strong>';cells[1].textContent=genomeRows[i][1];cells[2].innerHTML='<span class="badge '+(i<1?'green':i<4?'amber':'green')+'">'+genomeRows[i][2]+'</span>';cells[3].textContent=genomeRows[i][3]});
+  const journey = document.querySelector('.unit-journey');
+  const route = journey.querySelector('.unit-route');
+  const stops = [...journey.querySelectorAll('.unit-stop')];
+  const reading = journey.querySelector('.unit-reading');
+  const replay = journey.querySelector('#unit-replay');
+  const next = journey.querySelector('#unit-next');
+  const gateReadings = [
+    ['Geometry · AS41', genomeRows[0][1], 'Genome updated with the first geometry reading.'],
+    ['Geometry · AS43', genomeRows[1][1], 'Genome now contains the AS41 and AS43 geometry readings.'],
+    ['Quality state · MRS', 'Pending post-fitment verification', 'The genome has both geometry readings. The MRS quality result is pending.']
+  ];
+  let activeGate = 0;
+  let playback;
+
+  function showGate(index) {
+    activeGate = index;
+    route.style.setProperty('--gate-index', index);
+    stops.forEach((stop, i) => stop.setAttribute('aria-pressed', String(i === index)));
+    const [label, value, genome] = gateReadings[index];
+    const title = document.createElement('strong');
+    title.textContent = label;
+    reading.replaceChildren(title, document.createElement('br'), value, document.createElement('br'), genome);
+    next.disabled = index === stops.length - 1;
+  }
+
+  function stopPlayback() {
+    clearInterval(playback);
+    playback = undefined;
+    replay.textContent = 'Play journey';
+  }
+
+  stops.forEach((stop, index) => stop.addEventListener('click', () => {
+    stopPlayback();
+    showGate(index);
+  }));
+  next.addEventListener('click', () => {
+    stopPlayback();
+    showGate(activeGate + 1);
+  });
+  replay.addEventListener('click', () => {
+    if (playback !== undefined) {
+      stopPlayback();
+      return;
+    }
+    showGate(0);
+    replay.textContent = 'Pause journey';
+    playback = setInterval(() => {
+      showGate(activeGate + 1);
+      if (activeGate === stops.length - 1) stopPlayback();
+    }, 1500);
+  });
+  showGate(0);
+
   const vehicleReason=document.querySelector('#vehicle aside .recommend p');if(vehicleReason)vehicleReason.textContent='These vehicles share the same AS41 and AS43 left-hand aperture-deviation pattern and are approaching MA41 with measured IDZ door candidates available.';
 
   const bodyOptions=document.querySelectorAll('#bodySelect option');
