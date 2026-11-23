@@ -106,6 +106,8 @@ body:not(:has(#overview.active)) #runBtn{display:none}
   .email-form input,.email-form textarea{display:block;width:100%;font:inherit}
   .email-form textarea{resize:vertical}
   .email-form button{justify-self:start}
+  .actions #fullscreenBtn{white-space:nowrap}
+  @media(max-width:700px){.actions #fullscreenBtn:not([hidden]){display:inline-flex;padding:7px 8px;font-size:.75rem}}
 </style></head>
 <body>
 <div class="app">
@@ -128,7 +130,7 @@ body:not(:has(#overview.active)) #runBtn{display:none}
     <div class="side-foot"><span class="safe">● Read-only simulation</span><br>All values are synthetic. No production-system connection.</div>
   </aside>
   <main class="main">
-    <header class="top"><div><h1 id="pageTitle">Geometry Pairing</h1><p>Vehicle EL-C206-18472 · Assembly Mech 4 · 10 Sep 2026 13:42</p></div><div class="actions"><select class="select"><option>Plant: East London</option></select><button class="btn" id="resetBtn">Reset</button><button class="btn primary" id="runBtn">Scenario Run</button></div></header>
+    <header class="top"><div><h1 id="pageTitle">Geometry Pairing</h1><p>Vehicle EL-C206-18472 · Assembly Mech 4 · 10 Sep 2026 13:42</p></div><div class="actions"><select class="select"><option>Plant: East London</option></select><button type="button" class="btn" id="fullscreenBtn" hidden>Full screen</button><button class="btn" id="resetBtn">Reset</button><button class="btn primary" id="runBtn">Scenario Run</button></div></header>
     <div class="content">
       <section class="view" id="overview">
         <div class="notice"><b>Competition proof of concept.</b> This self-contained demonstration simulates authorised MRS, MSB, RDS/PLUS, inline geometry, technical-equipment and maintenance information.</div>
@@ -289,6 +291,26 @@ body:not(:has(#overview.active)) #runBtn{display:none}
     window.location.href = `${$('#emailRecipient').href}?subject=${subject}&body=${body}`;
   });
   const toast=msg=>{const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)};
+  const fullscreenBtn = $('#fullscreenBtn');
+  if (document.fullscreenEnabled && document.documentElement.requestFullscreen && document.exitFullscreen) {
+    fullscreenBtn.hidden = false;
+    const updateFullscreenButton = () => {
+      fullscreenBtn.textContent = document.fullscreenElement ? 'Exit full screen' : 'Full screen';
+    };
+    document.addEventListener('fullscreenchange', updateFullscreenButton);
+    fullscreenBtn.addEventListener('click', async () => {
+      try {
+        if (document.fullscreenElement) {
+          await document.exitFullscreen();
+        } else {
+          await document.documentElement.requestFullscreen();
+        }
+      } catch {
+        toast('Could not change full-screen mode in this browser.');
+      }
+    });
+    updateFullscreenButton();
+  }
   const vehicleProcessChart=$('#chart');
   if(vehicleProcessChart){vehicleProcessChart.previousElementSibling?.remove();vehicleProcessChart.remove()}
   const knowledgeView=document.createElement('section');knowledgeView.className='view';knowledgeView.id='knowledge';knowledgeView.innerHTML=`
