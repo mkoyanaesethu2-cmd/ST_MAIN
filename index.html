@@ -98,6 +98,14 @@ body:not(:has(#overview.active)) #runBtn{display:none}
   .unit-reading{padding:12px 0;min-height:6rem;color:var(--silver);line-height:1.5}
   .unit-controls{display:flex;gap:8px;flex-wrap:wrap}
   @media(prefers-reduced-motion:reduce){.unit-marker{transition:none}}
+  .nav button[data-view="email"] span{display:inline}
+  .email-card{max-width:640px}
+  .email-card a{color:var(--cyan);overflow-wrap:anywhere}
+  .email-form{display:grid;gap:14px;margin-top:18px}
+  .email-form label{display:grid;gap:6px;color:var(--silver)}
+  .email-form input,.email-form textarea{display:block;width:100%;font:inherit}
+  .email-form textarea{resize:vertical}
+  .email-form button{justify-self:start}
 </style></head>
 <body>
 <div class="app">
@@ -111,6 +119,7 @@ body:not(:has(#overview.active)) #runBtn{display:none}
       <button data-view="solutions"><i class="dot"></i><span>Solution Copilot</span></button>
       <button data-view="maintenance"><i class="dot"></i><span>Quality Maintenance</span></button>
       <button data-view="integration"><i class="dot"></i><span>Data & Automation</span></button>
+      <button type="button" data-view="email"><span>Email</span></button>
       <details class="nav-folder">
         <summary>More</summary>
         <button data-view="overview" aria-label="Control Tower"><i class="dot"></i><span>Control Tower</span></button>
@@ -248,14 +257,37 @@ body:not(:has(#overview.active)) #runBtn{display:none}
       <section class="view" id="solutions"><div class="grid layout"><div class="card"><div class="section-title"><div><h2>Root-cause and solution copilot</h2><p>Evidence-weighted hypotheses from SmartQ AI and verified historical outcomes</p></div><span class="badge amber">HUMAN REVIEW</span></div><table class="table"><thead><tr><th>Rank</th><th>Hypothesis</th><th>Evidence</th><th>Confidence</th></tr></thead><tbody><tr><td>01</td><td><strong>Fixture locating condition</strong></td><td>SmartQ match to 11 closed MRS/MSB cases; same geometry direction</td><td><span class="badge red">82%</span></td></tr><tr><td>02</td><td><strong>Incoming-part interaction</strong></td><td>Batch D184 shift remains individually in specification</td><td><span class="badge amber">74%</span></td></tr><tr><td>03</td><td><strong>Joining recipe interaction</strong></td><td>Current-time profile differs for material + variant combination</td><td><span class="badge amber">63%</span></td></tr></tbody></table><div class="recommend"><h3>Approved investigation sequence</h3><p>1. Verify fixture reference and locating-pin condition. 2. Confirm measurement-system confidence. 3. Compare D184 sample with retained reference. 4. Review joining signature against the approved C206-R12 envelope. 5. Verify the next body before closure.</p></div></div><aside class="card"><div class="section-title"><div><h2>Historical case</h2><p>MRS QF-221 · verified closure</p></div></div><div class="riskbox"><div class="label">Most similar event</div><div class="value">91% match</div><p style="color:var(--silver);font-size:.8rem;line-height:1.55">A similar body-opening trend followed fixture wear and part-batch interaction. The verified action was locating-pin replacement, reference verification and targeted inspection of nine VINs.</p></div><button class="btn primary" id="approveBtn" style="width:100%;margin-top:14px">Approve diagnostic task</button></aside></div></section>
 
       <section class="view" id="integration"><div class="grid"><div class="card"><div class="section-title"><div><h2>Governed data and automation flow</h2><p>Production sources remain authoritative; the prototype represents read-only integration</p></div><span class="safe">● CONNECTORS SIMULATED</span></div><div class="flow"><div class="node"><b>MRS</b><small>Quality results, defects, rework and verified outcomes</small></div><div class="arrow">→</div><div class="node"><b>MSB</b><small>Quality-formatted technical process messages</small></div><div class="arrow">→</div><div class="node"><b>Quality Genome</b><small>Identity, features, prediction, explanations and audit</small></div><div class="arrow">→</div><div class="node"><b>Decision workflow</b><small>Human approval, task routing and verification</small></div><div class="arrow">→</div><div class="node"><b>Learning loop</b><small>Only confirmed causes and validated outcomes</small></div></div></div><div class="card"><div class="section-title"><div><h2>Illustrative n8n orchestration</h2><p>How approved events could be coordinated without direct control-system writes</p></div></div><div class="flow"><div class="node"><b>1 · Schedule / event</b><small>Receive approved MSB or batch trigger</small></div><div class="arrow">→</div><div class="node"><b>2 · Validate</b><small>Schema, source, VIN, asset and timestamp checks</small></div><div class="arrow">→</div><div class="node"><b>3 · AI inference</b><small>Python model API returns risk and evidence</small></div><div class="arrow">→</div><div class="node"><b>4 · Decision gate</b><small>Policy rules and human authority</small></div><div class="arrow">→</div><div class="node"><b>5 · Notify / record</b><small>Create task and preserve audit outcome</small></div></div><div class="notice" style="margin-top:16px;margin-bottom:0"><b>Implementation option:</b> n8n or Power Automate can orchestrate approved HTTP/API workflows; Python can host prediction and similarity models; Java services can integrate with enterprise interfaces where required. The competition file itself stays dependency-free and browser-safe.</div></div></div></section>
+      <section class="view" id="email" aria-labelledby="emailHeading">
+        <div class="card email-card">
+          <div class="section-title">
+            <div>
+              <h2 id="emailHeading">Email PredictIQ</h2>
+              <p>Write your message here, then open it in your email app to send it.</p>
+            </div>
+          </div>
+          <a id="emailRecipient" href="mailto:esethu.mkonyana@mercedes-benz.com">esethu.mkonyana@mercedes-benz.com</a>
+          <form class="email-form" id="emailForm">
+            <label>Subject <input class="select" name="subject" required></label>
+            <label>Message <textarea class="select" name="message" rows="6" required></textarea></label>
+            <button class="btn primary" type="submit">Open email draft</button>
+          </form>
+        </div>
+      </section>
     </div>
   </main>
 </div>
 <div class="toast" id="toast" role="status"></div>
 <script>
   const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-  const titles={overview:'Plant Quality Control Tower',vehicle:'Vehicle Quality Genome',geometry:'Geometry Pairing',smartq:'SmartQ AI Intelligence',knowledge:'SmartQ Knowledge Hub',solutions:'Root-Cause & Solution Copilot',maintenance:'Quality-Driven Maintenance',integration:'Data & Automation Architecture'};
+  const titles={overview:'Plant Quality Control Tower',vehicle:'Vehicle Quality Genome',geometry:'Geometry Pairing',smartq:'SmartQ AI Intelligence',knowledge:'SmartQ Knowledge Hub',solutions:'Root-Cause & Solution Copilot',maintenance:'Quality-Driven Maintenance',integration:'Data & Automation Architecture',email:'Email'};
   $$('.nav button').forEach(b=>b.addEventListener('click',()=>{ $$('.nav button').forEach(x=>x.classList.remove('active')); b.classList.add('active'); $$('.view').forEach(v=>v.classList.remove('active')); $('#'+b.dataset.view).classList.add('active'); $('#pageTitle').textContent=titles[b.dataset.view]; }));
+  $('#emailForm').addEventListener('submit', event => {
+    event.preventDefault();
+    const fields = new FormData(event.currentTarget);
+    const subject = encodeURIComponent(fields.get('subject'));
+    const body = encodeURIComponent(fields.get('message').replace(/\r?\n/g, '\r\n'));
+    window.location.href = `${$('#emailRecipient').href}?subject=${subject}&body=${body}`;
+  });
   const toast=msg=>{const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)};
   const vehicleProcessChart=$('#chart');
   if(vehicleProcessChart){vehicleProcessChart.previousElementSibling?.remove();vehicleProcessChart.remove()}
