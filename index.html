@@ -132,6 +132,19 @@ body:not(:has(#overview.active)) #runBtn{display:none}
   .clinch-deltas strong{margin:5px 0;font-size:1.2rem}
   .clinch-deltas small{color:var(--silver)}
   .clinch-monitor-title{margin:22px 0 8px;font-size:.95rem}
+  .clinch-verdict:not([hidden]){display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 18px;margin:12px 0 4px;padding:12px 16px;border:1px solid #43886b;border-radius:10px;background:linear-gradient(105deg,#153729,#12251f);color:#b4f6d3}
+  .clinch-verdict.bad{border-color:#a14b5a;background:linear-gradient(105deg,#481e29,#291923);color:#ffd3d7}
+  .clinch-verdict strong{font-size:clamp(1.1rem,2.6vw,1.9rem);line-height:1.15}
+  .clinch-verdict span{font-size:clamp(.8rem,1.5vw,1.05rem);font-weight:650}
+  #clinchChart .clinch-trace-label{font-weight:750;paint-order:stroke;stroke:#0d1218;stroke-width:5;stroke-linejoin:round}
+  .pair-comparison{margin:14px 0;padding:14px;border:1px solid #36596a;border-radius:12px;background:linear-gradient(125deg,#132631,#0f1a25)}
+  .pair-comparison h4{margin:0;font-size:1rem}
+  .pair-comparison p{margin:4px 0 10px;color:var(--silver);font-size:.82rem}
+  .pair-comparison-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .pair-comparison-grid div{padding:10px;border:1px solid #355264;border-radius:8px;background:#0d1720}
+  .pair-comparison-grid span,.pair-comparison-grid strong{display:block;overflow-wrap:anywhere}
+  .pair-comparison-grid span{color:var(--silver);font-size:.8rem}
+  .pair-comparison-grid strong{margin-top:3px;color:var(--cyan);font-size:clamp(1rem,2.1vw,1.55rem)}
 </style></head>
 <body>
 <div class="app">
@@ -216,6 +229,11 @@ body:not(:has(#overview.active)) #runBtn{display:none}
           <section class="pairing-output" id="pairingOutput" aria-labelledby="pairing-output-title">
             <div class="section-title"><div><h3 id="pairing-output-title">MA41 · Station 200</h3><p>Batch-based best fit</p></div><button type="button" class="btn primary" id="pairBtn">Run pairing</button></div>
             <div id="pairResult" role="status"></div>
+            <section class="pair-comparison" id="pairComparison" aria-labelledby="pairComparisonTitle" hidden>
+              <h4 id="pairComparisonTitle">BestFit · Left-door batches</h4>
+              <p>Same MA41 station and available batches.</p>
+              <div class="pair-comparison-grid" id="pairComparisonResults" aria-live="polite"></div>
+            </section>
             <div class="assembly-replay">
               <div class="assembly-head"><h4>Body and door transfer</h4><span>Simulated replay</span></div>
               <svg id="assemblyScene" viewBox="0 0 760 400" role="img" aria-labelledby="assemblyTitle assemblyDescription">
@@ -690,6 +708,9 @@ clinchingView.innerHTML=`
 </div>
 <figure class="clinch-figure">
   <figcaption><strong>Clinching force vs distance</strong><span id="clinchLegend"></span></figcaption>
+  <div id="clinchVerdict" class="clinch-verdict" hidden>
+    <strong id="clinchVerdictCount"></strong><span id="clinchVerdictDecision"></span>
+  </div>
   <svg id="clinchChart" viewBox="0 0 680 300" role="img" aria-labelledby="clinchChartTitle clinchChartDesc">
     <title id="clinchChartTitle">Clinching force versus distance</title>
     <desc id="clinchChartDesc"></desc>
@@ -757,13 +778,20 @@ function drawClinchCurves(count){
   const color=teachResult?.alarm?'#ff7988':'#ffbf72';
   const trace=(values,stroke,width,opacity,dash='')=>`<path d="${clinchCurve(values)}" fill="none" stroke="${stroke}" stroke-width="${width}" opacity="${opacity}" stroke-dasharray="${dash}" vector-effect="non-scaling-stroke"/>`;
   const marks=(values,stroke)=>[[1.95,values[0]],[3.75,values[1]],[values[3],values[2]]].map(([distance,force])=>`<circle cx="${clinchX(distance)}" cy="${clinchY(force)}" r="4" fill="${stroke}"/>`).join('');
+  const label=(values,y,caption,stroke)=>{
+    const x=clinchX(values[3]);
+    const end=clinchY(values[2]);
+    return `<path d="M${x} ${end}L${x-33} ${y-4}H478" fill="none" stroke="${stroke}" stroke-width="1.5"/><text class="clinch-trace-label" x="470" y="${y}" text-anchor="end" style="fill:${stroke}">${caption}</text>`;
+  };
   const latest=count?monitoringSamples()[count-1]:null;
   clinchField('clinchTraces').innerHTML=
     history.map(values=>trace(values,'#50d9ee',1,.24)).join('')+
     comparison.map(values=>trace(values,color,1,.40)).join('')+
     trace(clinchCurveBaseline,'#50d9ee',2.6,1)+marks(clinchCurveBaseline,'#50d9ee')+
     (candidate?trace(candidate,color,3,1,'7 4')+marks(candidate,color):'')+
-    (latest?trace(latest,'#bcefa3',1.4,.85,'2 5'):'');
+    (latest?trace(latest,'#bcefa3',1.4,.85,'2 5'):'')+
+    label(clinchCurveBaseline,39,'Old verified reference','#50d9ee')+
+    (candidate?label(candidate,116,'New teach reference',color):'');
   clinchField('clinchLegend').innerHTML=`<span style="color:#50d9ee">━</span> Old verified reference · <span style="color:${color}">${candidate?'┄':'─'}</span> ${candidate?'New teach reference':'Captured teach points'}${latest?' · <span style="color:#bcefa3">┈</span> Latest monitored point':''}`;
   const endpoint=values=>values[2].toFixed(1)+' kN at '+values[3].toFixed(2)+' mm';
   const summary=candidate?`End of stroke · Old: ${endpoint(clinchCurveBaseline)} · New: ${endpoint(candidate)}.`:
@@ -801,6 +829,7 @@ function resetClinchLearning(){
   clinchField('clinchTeachStatus').className='';
   clinchField('clinchTeachStatus').textContent='Ready to teach · 0 of 4 points captured.';
   clinchField('clinchTeachDelta').hidden=true;
+  clinchField('clinchVerdict').hidden=true;
   clinchField('clinchCapture').disabled=false;
   clinchField('clinchComplete').disabled=false;
   clinchField('clinchRows').replaceChildren();
@@ -825,6 +854,14 @@ function finishClinchTeach(){
   const cards=clinchField('clinchTeachDelta');
   cards.innerHTML=deltas.map((delta,i)=>`<article class="${breaches[i]?'bad':''}"><small>${clinchFeatures[i]} · ${breaches[i]?'Over limit':'Within limit'}</small><strong>${clinchDelta(delta,i)}</strong><small>${clinchFormat(reference[i].mean,i)} → ${clinchFormat(candidate[i],i)} · Limit ±${clinchFormat(reference[i].limit,i)}</small></article>`).join('');
   cards.hidden=false;
+  const verdict=clinchField('clinchVerdict');
+  const breachCount=breaches.filter(Boolean).length;
+  verdict.classList.toggle('bad',alarm);
+  clinchField('clinchVerdictCount').textContent=alarm?
+    breachCount+' of 4 checks over limit':'4 of 4 checks within limits';
+  clinchField('clinchVerdictDecision').textContent=alarm?
+    'Original reference retained':'Proceed to independent verification';
+  verdict.hidden=false;
   const status=clinchField('clinchTeachStatus');
   status.className=alarm?'bad':'good';
   status.textContent=alarm?`Teach-in alarm · ${breaches.filter(Boolean).length} of 4 checks exceeded their limits. The original reference stays active. Check whether the O-ring fault was fully resolved and verify joint quality before re-teaching.`:
@@ -1000,6 +1037,23 @@ function playAssembly(batches, line, station) {
   }
   assemblyFrame = requestAnimationFrame(advance);
 }
+const savedPairings={front:new Map(),rear:new Map()};
+const pairComparison=document.getElementById('pairComparison');
+const pairComparisonResults=document.getElementById('pairComparisonResults');
+function showPairComparison(position){
+  const comparisons=savedPairings[position];
+  pairComparison.hidden=comparisons.size<2;
+  if(pairComparison.hidden)return;
+  pairComparisonResults.replaceChildren(...[...comparisons.values()].map(({vin,batch})=>{
+    const card=document.createElement('div');
+    const vehicle=document.createElement('span');
+    vehicle.textContent=vin;
+    const result=document.createElement('strong');
+    result.textContent=batch?'Batch '+batch:'No in-spec batch';
+    card.append(vehicle,result);
+    return card;
+  }));
+}
 function renderPairing(run = false) {
   const body = bodyReadings[pairingBody.value];
   const vin = pairingBody.selectedOptions[0].textContent;
@@ -1043,6 +1097,8 @@ function renderPairing(run = false) {
     result.append(title,detail);
     results.append(result);
   });
+  if(run)savedPairings[position].set(pairingBody.value,{vin,batch:selectedBatches.left?.id});
+  showPairComparison(position);
   playAssembly(run ? selectedBatches : {}, line, station);
   if (!run) {
     pairingResult.textContent = 'Run pairing to compare the in-spec batches against both measurements.';
