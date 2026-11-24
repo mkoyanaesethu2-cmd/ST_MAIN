@@ -117,6 +117,21 @@ body:not(:has(#overview.active)) #runBtn{display:none}
   #clinchChart text{fill:#c6d3df}
   .clinch-figure p{color:var(--white);font-size:.9rem;margin:4px 0 8px}
   .clinch-figure small{color:var(--silver)}
+  .clinch-teach{padding:16px;border:1px solid #304659;border-radius:12px;background:linear-gradient(110deg,#142533,#101820)}
+  .clinch-teach ol{display:flex;flex-wrap:wrap;gap:8px 22px;margin:0 0 14px;padding:0;list-style:none;color:var(--silver);font-size:.8rem}
+  .clinch-teach li[aria-current]{color:var(--cyan);font-weight:750}
+  .clinch-teach li+li::before{content:'›';margin-right:12px;color:var(--silver)}
+  #clinchTeachStatus{margin:12px 0 0;line-height:1.5;color:var(--silver)}
+  #clinchTeachStatus.bad,#clinchTeachStatus.good{padding:10px 12px;border-radius:8px;font-weight:650}
+  #clinchTeachStatus.bad{color:#ffd3d7;background:#471e29}
+  #clinchTeachStatus.good{color:#b4f6d3;background:#153729}
+  .clinch-deltas:not([hidden]){display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:8px}
+  .clinch-deltas article{padding:12px;border:1px solid var(--line);border-radius:9px;background:#111b24}
+  .clinch-deltas article.bad{border-color:#934453;background:#251a24}
+  .clinch-deltas strong,.clinch-deltas small{display:block}
+  .clinch-deltas strong{margin:5px 0;font-size:1.2rem}
+  .clinch-deltas small{color:var(--silver)}
+  .clinch-monitor-title{margin:22px 0 8px;font-size:.95rem}
 </style></head>
 <body>
 <div class="app">
@@ -663,8 +678,16 @@ const clinchingView=document.createElement('section');
 clinchingView.id='smartqClinching';
 clinchingView.className='card pitch-card';
 clinchingView.innerHTML=`
-<div class="section-title"><h2>Clinching · Learn and monitor</h2><span class="badge amber">SIMULATED MSB DATA</span></div>
-<div class="formgrid"><div class="field"><label for="clinchSample">Post-teach sample</label><select id="clinchSample"><option value="shift">O-ring failure (simulated)</option><option value="stable">Stable curves</option></select></div></div>
+<div class="section-title"><div><h2>Clinching · Teach-in verification</h2><p>Compare the new reference with the last verified reference as soon as teaching ends.</p></div><span class="badge amber">SIMULATED MSB DATA</span></div>
+<div class="formgrid"><div class="field"><label for="clinchSample">Teach-in scenario</label><select id="clinchSample"><option value="shift">O-ring failure (simulated)</option><option value="stable">Repair verified · stable curves</option></select></div></div>
+<div class="clinch-teach">
+  <ol aria-label="Teach-in progress"><li aria-current="step">Verified reference</li><li>Capture teach points</li><li>Compare references</li></ol>
+  <div class="fds-actions">
+    <button class="btn" id="clinchCapture" type="button">Capture next teach point</button>
+    <button class="btn primary" id="clinchComplete" type="button">Complete teach-in</button>
+  </div>
+  <p id="clinchTeachStatus" role="status"></p>
+</div>
 <figure class="clinch-figure">
   <figcaption><strong>Clinching force vs distance</strong><span id="clinchLegend"></span></figcaption>
   <svg id="clinchChart" viewBox="0 0 680 300" role="img" aria-labelledby="clinchChartTitle clinchChartDesc">
@@ -672,10 +695,12 @@ clinchingView.innerHTML=`
     <desc id="clinchChartDesc"></desc>
     <g id="clinchAxes"></g><g id="clinchTraces"></g>
   </svg>
-  <p id="clinchCurveSummary">Process a clinch point to overlay its curve on the verified baseline.</p>
+  <p id="clinchCurveSummary">Capture teach points to compare them with the verified reference.</p>
   <small>Synthetic traces for the same clinch profile. Verify the O-ring condition and joint quality independently.</small>
 </figure>
-<p id="clinchBaseline"></p><p id="clinchTeachDelta"></p>
+<p id="clinchBaseline"></p>
+<div id="clinchTeachDelta" class="clinch-deltas" hidden></div>
+<h3 class="clinch-monitor-title">Post-teach monitoring</h3>
 <div class="fds-actions"><button class="btn primary" id="clinchNext" type="button">Process next clinch point</button><button class="btn" id="clinchRun" type="button">Run all points</button><button class="btn" id="clinchReset" type="button">Reset</button></div>
 <div class="notice" id="clinchStatus" role="status"></div>
 <div class="table-wrap"><table class="table"><thead><tr><th>Unit / point</th><th>Controller / quality</th><th>Deep draw Δ</th><th>Compression Δ</th><th>Final force Δ</th><th>Final distance Δ</th></tr></thead><tbody id="clinchRows"></tbody></table></div>
@@ -720,53 +745,108 @@ function clinchCurve([draw,compression,finalForce,end]){
   },'');
 }
 const clinchCurveBaseline=learnClinchReference(history).map(feature=>feature.mean);
+const clinchFormat=(value,i)=>value.toFixed(i===3?2:1)+' '+clinchUnits[i];
+const clinchDelta=(value,i)=>(value>0?'+':'')+clinchFormat(value,i);
+const clinchFeatures=['Deep draw','Compression','Final force','Final distance'];
+let reference,pointIndex,signatures,clinchWarning,teachCount,teachResult;
+const teachSamples=()=>clinchField('clinchSample').value==='stable'?verifiedStable:shifted;
+
 function drawClinchCurves(count){
-  const stable=clinchField('clinchSample').value==='stable';
-  const comparison=(stable?verifiedStable:shifted).slice(0,count);
-  const color=stable?'#9fefaf':'#ffb45c';
+  const comparison=teachSamples().slice(0,teachCount);
+  const candidate=teachResult?.candidate;
+  const color=teachResult?.alarm?'#ff7988':'#ffbf72';
   const trace=(values,stroke,width,opacity,dash='')=>`<path d="${clinchCurve(values)}" fill="none" stroke="${stroke}" stroke-width="${width}" opacity="${opacity}" stroke-dasharray="${dash}" vector-effect="non-scaling-stroke"/>`;
+  const marks=(values,stroke)=>[[1.95,values[0]],[3.75,values[1]],[values[3],values[2]]].map(([distance,force])=>`<circle cx="${clinchX(distance)}" cy="${clinchY(force)}" r="4" fill="${stroke}"/>`).join('');
+  const latest=count?monitoringSamples()[count-1]:null;
   clinchField('clinchTraces').innerHTML=
-    history.map(values=>trace(values,'#50d9ee',1,.25)).join('')+
-    trace(clinchCurveBaseline,'#50d9ee',2.6,1)+
-    comparison.map((values,index)=>trace(values,color,index===count-1?2.8:1,index===count-1?1:.30,index===count-1?'7 4':'')).join('')+
-    [clinchCurveBaseline,...comparison.slice(-1)].map((values,index)=>`<circle cx="${clinchX(values[3])}" cy="${clinchY(values[2])}" r="4" fill="${index?color:'#50d9ee'}"/>`).join('');
-  const before=stable?'Verified baseline':'Before O-ring failure';
-  const after=stable?'Stable sample':'After O-ring failure';
-  clinchField('clinchLegend').innerHTML=`<span style="color:#50d9ee">━</span> ${before} · <span style="color:${color}">┄</span> ${after}`;
-  const latest=comparison[count-1];
+    history.map(values=>trace(values,'#50d9ee',1,.24)).join('')+
+    comparison.map(values=>trace(values,color,1,.40)).join('')+
+    trace(clinchCurveBaseline,'#50d9ee',2.6,1)+marks(clinchCurveBaseline,'#50d9ee')+
+    (candidate?trace(candidate,color,3,1,'7 4')+marks(candidate,color):'')+
+    (latest?trace(latest,'#bcefa3',1.4,.85,'2 5'):'');
+  clinchField('clinchLegend').innerHTML=`<span style="color:#50d9ee">━</span> Old verified reference · <span style="color:${color}">${candidate?'┄':'─'}</span> ${candidate?'New teach reference':'Captured teach points'}${latest?' · <span style="color:#bcefa3">┈</span> Latest monitored point':''}`;
   const endpoint=values=>values[2].toFixed(1)+' kN at '+values[3].toFixed(2)+' mm';
-  const summary=latest?`End of stroke · ${before}: ${endpoint(clinchCurveBaseline)}. ${after}: ${endpoint(latest)}.`:'Process a clinch point to overlay its curve on the verified baseline.';
+  const summary=candidate?`End of stroke · Old: ${endpoint(clinchCurveBaseline)} · New: ${endpoint(candidate)}.`:
+    teachCount?`${teachCount} of 4 teach traces captured. Complete teaching to compare the two references.`:'The verified reference is loaded. Capture new teach points to compare.';
   clinchField('clinchChartDesc').textContent=summary;
   clinchField('clinchCurveSummary').textContent=summary;
 }
-const clinchFormat=(value,i)=>value.toFixed(i===3?2:1)+' '+clinchUnits[i];
-let reference,pointIndex,signatures,clinchWarning;
+
 function showClinchReference(version,count){
-  clinchField('clinchBaseline').textContent='Same profile · Reference '+version+' · '+count+' verified good points · '+reference.map((f,i)=>clinchFormat(f.mean,i)).join(' / ');
+  clinchField('clinchBaseline').textContent='Active reference '+version+' · '+count+' verified good points · '+reference.map((f,i)=>clinchFormat(f.mean,i)).join(' / ');
 }
+
+function setTeachStep(index){
+  clinchingView.querySelectorAll('.clinch-teach li').forEach((step,i)=>{
+    if(i===index)step.setAttribute('aria-current','step');
+    else step.removeAttribute('aria-current');
+  });
+}
+
+function monitoringSamples(){
+  // Generate independent follow-up points for the same simulated condition.
+  return teachSamples().map((sample,index)=>sample.map((value,feature)=>
+    value+(index%2===0?1:-1)*(feature===3?.01:.1)));
+}
+
 function resetClinchLearning(){
   reference=learnClinchReference(history);
   pointIndex=0;
+  teachCount=0;
+  teachResult=null;
   signatures=new Map();
   clinchWarning=null;
   showClinchReference('v1',history.length);
-  const taught=clinchField('clinchSample').value==='stable'?verifiedStable:shifted;
-  const taughtReference=learnClinchReference(taught);
-  const teachDelta=taughtReference.map((feature,i)=>feature.mean-reference[i].mean);
-  clinchField('clinchTeachDelta').textContent='Re-taught reference vs v1 · Deep draw, compression, final force, final distance: '+teachDelta.map((d,i)=>(d>0?'+':'')+clinchFormat(d,i)).join(' / ');
+  setTeachStep(0);
+  clinchField('clinchTeachStatus').className='';
+  clinchField('clinchTeachStatus').textContent='Ready to teach · 0 of 4 points captured.';
+  clinchField('clinchTeachDelta').hidden=true;
+  clinchField('clinchCapture').disabled=false;
+  clinchField('clinchComplete').disabled=false;
   clinchField('clinchRows').replaceChildren();
   drawClinchCurves(0);
-  clinchField('clinchStatus').textContent='Controller re-taught · SmartQ is monitoring against reference v1.';
-  clinchField('clinchReview').textContent='Reference review every 4 points in this demo. Updates use independently verified, in-family results.';
-  clinchField('clinchNext').disabled=false;
-  clinchField('clinchRun').disabled=false;
+  clinchField('clinchStatus').textContent='Complete the teach-in to begin monitoring.';
+  clinchField('clinchReview').textContent='';
+  clinchField('clinchNext').disabled=true;
+  clinchField('clinchRun').disabled=true;
   clinchField('clinchCopilot').hidden=true;
   clinchCase.hidden=true;
 }
+
+function finishClinchTeach(){
+  if(teachResult)return;
+  teachCount=teachSamples().length;
+  const candidate=learnClinchReference(teachSamples()).map(feature=>feature.mean);
+  const deltas=candidate.map((value,i)=>value-reference[i].mean);
+  const breaches=deltas.map((delta,i)=>Math.abs(delta)>reference[i].limit);
+  const alarm=breaches.some(Boolean);
+  teachResult={candidate,alarm};
+  setTeachStep(2);
+  const cards=clinchField('clinchTeachDelta');
+  cards.innerHTML=deltas.map((delta,i)=>`<article class="${breaches[i]?'bad':''}"><small>${clinchFeatures[i]} · ${breaches[i]?'Over limit':'Within limit'}</small><strong>${clinchDelta(delta,i)}</strong><small>${clinchFormat(reference[i].mean,i)} → ${clinchFormat(candidate[i],i)} · Limit ±${clinchFormat(reference[i].limit,i)}</small></article>`).join('');
+  cards.hidden=false;
+  const status=clinchField('clinchTeachStatus');
+  status.className=alarm?'bad':'good';
+  status.textContent=alarm?`Teach-in alarm · ${breaches.filter(Boolean).length} of 4 checks exceeded their limits. The original reference stays active. Check whether the O-ring fault was fully resolved and verify joint quality before re-teaching.`:
+    'Comparison passed · All four checks are within limits. Monitor independently verified joints before updating the reference.';
+  clinchField('clinchCapture').disabled=true;
+  clinchField('clinchComplete').disabled=true;
+  clinchField('clinchNext').disabled=false;
+  clinchField('clinchRun').disabled=false;
+  clinchField('clinchStatus').textContent='Ready to monitor against verified reference v1.';
+  clinchField('clinchReview').textContent='Reference review after four monitored points.';
+  if(alarm){
+    clinchCase.innerHTML='<span class="badge amber">TEACH-IN ALARM</span><h2>Clinching · New reference held</h2><p>The new teach curve exceeded its comparison limits. Check the O-ring repair and verify joint quality before repeating the teach-in.</p>';
+    clinchCase.hidden=false;
+    clinchField('clinchCopilot').hidden=false;
+  }
+  drawClinchCurves(0);
+}
+
 function processClinchPoint(){
-  if(pointIndex>=4)return;
+  if(!teachResult||pointIndex>=4)return;
   const stable=clinchField('clinchSample').value==='stable';
-  const values=(stable?verifiedStable:shifted)[pointIndex];
+  const values=monitoringSamples()[pointIndex];
   const unit=Math.floor(pointIndex/2)+1;
   const point=pointIndex%2+1;
   const differences=reference.map((f,i)=>values[i]-f.mean);
@@ -785,12 +865,12 @@ function processClinchPoint(){
   pointIndex++;
   drawClinchCurves(pointIndex);
   clinchField('clinchStatus').textContent=clinchWarning?'SMARTQ WARNING · Same deviation on units '+clinchWarning.units.join(' and ')+' · Controller and quality OK · Flagged at point '+clinchWarning.point:signature==='0,0,0,0'?'Within learned range · '+pointIndex+'/4 points processed':'Deviation tracked on '+signatures.get(signature).size+'/2 distinct units · '+pointIndex+'/4 points processed';
-  clinchField('clinchCopilot').hidden=!clinchWarning;
+  clinchField('clinchCopilot').hidden=!clinchWarning&&!teachResult.alarm;
   if(pointIndex===4){
     clinchField('clinchNext').disabled=true;
     clinchField('clinchRun').disabled=true;
-    if(stable&&signatures.size===0){
-      const verifiedHistory=history.concat(verifiedStable);
+    if(stable&&!teachResult.alarm&&signatures.size===0){
+      const verifiedHistory=history.concat(monitoringSamples());
       reference=learnClinchReference(verifiedHistory);
       showClinchReference('v2',verifiedHistory.length);
       clinchField('clinchReview').textContent='Scheduled review complete · v2 learned from 10 verified good points.';
@@ -799,17 +879,28 @@ function processClinchPoint(){
     }
   }
 }
+clinchField('clinchCapture').addEventListener('click',()=>{
+  teachCount++;
+  if(teachCount===teachSamples().length){
+    finishClinchTeach();
+  }else{
+    setTeachStep(1);
+    clinchField('clinchTeachStatus').textContent=teachCount+' of 4 teach points captured.';
+    drawClinchCurves(0);
+  }
+});
+clinchField('clinchComplete').addEventListener('click',finishClinchTeach);
 clinchField('clinchSample').addEventListener('change',resetClinchLearning);
 clinchField('clinchReset').addEventListener('click',resetClinchLearning);
 clinchField('clinchNext').addEventListener('click',processClinchPoint);
-clinchField('clinchRun').addEventListener('click',()=>{while(pointIndex<4)processClinchPoint();});
+clinchField('clinchRun').addEventListener('click',()=>{while(teachResult&&pointIndex<4)processClinchPoint();});
 function publishClinchFlag(){
   if(!clinchWarning)return;
   clinchCase.innerHTML='<span class="badge amber">FLAGGED FOR REVIEW</span><h2>Clinching · Post-teach deviation</h2><p>Same directional deviation on units '+clinchWarning.units.join(' and ')+' against learned reference v1. Controller and quality results are OK.</p><p><b>Evidence at warning</b> · Deep draw, compression, final force and final distance: '+clinchWarning.differences.map(clinchFormat).join(' / ')+'</p><p><b>Proposed response</b> · Review the teach-in and compare the process curves. Verify joint quality independently before accepting new examples into the reference.</p>';
   clinchCase.hidden=false;
 }
 clinchField('clinchCopilot').addEventListener('click',()=>{
-  if(!clinchWarning)return;
+  if(!clinchWarning&&!teachResult?.alarm)return;
   document.querySelector('[data-view="solutions"]').click();
   clinchCase.scrollIntoView({block:'start'});
 });
